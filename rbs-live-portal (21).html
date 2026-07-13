@@ -1,0 +1,2570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/jpeg" href="">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Royal Business Solutions — Staff Portal</title>
+
+<!-- PWA Meta Tags -->
+<meta name="application-name" content="RBS Portal">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RBS Portal">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a3a6b">
+<meta name="description" content="Royal Business Solutions — Staff Portal">
+<meta name="msapplication-TileColor" content="#1a3a6b">
+
+<!-- PWA Manifest (inline as data URI so single-file works) -->
+<link rel="manifest" href="data:application/json;charset=utf-8,{
+  %22name%22:%22Royal Business Solutions%22,
+  %22short_name%22:%22RBS Portal%22,
+  %22description%22:%22Royal Business Solutions Staff Portal%22,
+  %22start_url%22:%22.%2F%22,
+  %22display%22:%22standalone%22,
+  %22orientation%22:%22portrait-primary%22,
+  %22background_color%22:%22%231a3a6b%22,
+  %22theme_color%22:%22%231a3a6b%22,
+  %22icons%22:[
+    {%22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='32' fill='%231a3a6b'/%3E%3Ctext x='50%25' y='55%25' font-size='110' text-anchor='middle' dominant-baseline='middle' fill='%23c8d9f5'%3E%F0%9F%91%91%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22},
+    {%22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%231a3a6b'/%3E%3Ctext x='50%25' y='55%25' font-size='300' text-anchor='middle' dominant-baseline='middle' fill='%23c8d9f5'%3E%F0%9F%91%91%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22512x512%22,%22type%22:%22image/svg+xml%22}
+  ]
+}">
+
+<!-- Apple Touch Icons -->
+<link rel="apple-touch-icon" href="">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<style>
+:root{--navy:#1a3a6b;--navy-light:#e8eef8;--navy-dark:#122d57;--green:#1D9E75;--s0:#f5f6f8;--s1:#eff1f4;--s2:#fff;--border:#e2e5ea;--bstrong:#cdd1d9;--tp:#111827;--ts:#4b5563;--tm:#9ca3af;--r:6px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--s0);min-height:100vh}
+/* LOGIN */
+.login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#0f2448 0%,#1a3a6b 50%,#1D9E75 100%)}
+.login-box{background:var(--s2);border-radius:16px;padding:2.5rem;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:1.75rem}
+.login-logo-icon{width:44px;height:44px;border-radius:10px;background:var(--navy);display:flex;align-items:center;justify-content:center}
+.login-logo-icon i{font-size:22px;color:#c8d9f5}
+.login-title{font-size:20px;font-weight:700;color:var(--tp)}
+.login-sub{font-size:12px;color:var(--tm);margin-top:2px}
+.login-field{margin-bottom:14px}
+.login-field label{font-size:12px;font-weight:500;color:var(--ts);display:block;margin-bottom:5px}
+.login-field input{width:100%;font-size:14px;padding:10px 12px;border:1px solid var(--bstrong);border-radius:var(--r);background:var(--s0);color:var(--tp)}
+.login-field input:focus{outline:none;border-color:var(--navy);background:var(--s2)}
+.login-btn{width:100%;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;margin-top:6px}
+.login-btn:hover{background:var(--navy-dark)}
+.login-err{color:#dc2626;font-size:12px;margin-top:8px;text-align:center;display:none}
+/* SHELL */
+.shell{display:none;min-height:100vh}
+.shell.show{display:flex}
+.sidebar{width:215px;min-width:215px;background:var(--s2);border-right:0.5px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:10}
+.logo-area{padding:1rem;border-bottom:0.5px solid var(--border)}
+.logo{display:flex;align-items:center;gap:9px}
+.logo-icon{width:32px;height:32px;border-radius:8px;background:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-icon i{font-size:17px;color:#c8d9f5}
+.user-chip{margin-top:10px;background:var(--navy-light);border-radius:var(--r);padding:8px 10px;display:flex;align-items:center;gap:8px}
+.user-av{width:28px;height:28px;border-radius:50%;background:var(--navy);color:#c8d9f5;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0}
+.user-chip-name{font-size:12px;font-weight:500;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-chip-role{font-size:10px;color:var(--ts)}
+.nav-scroll{flex:1;overflow-y:auto;padding:8px 0}
+.ng{font-size:9.5px;color:var(--tm);padding:10px 1rem 3px;text-transform:uppercase;letter-spacing:.06em;font-weight:500}
+.ni{display:flex;align-items:center;gap:9px;padding:7px 1rem;font-size:13px;color:var(--ts);cursor:pointer;border-left:2px solid transparent;transition:all .1s}
+.ni:hover{background:var(--s0);color:var(--tp)}
+.ni.active{color:var(--navy);background:var(--navy-light);border-left-color:var(--navy);font-weight:500}
+.ni i{font-size:16px;flex-shrink:0}
+.logout-btn{margin:1rem;padding:8px;background:var(--s0);border:0.5px solid var(--border);border-radius:var(--r);font-size:12px;color:var(--ts);cursor:pointer;display:flex;align-items:center;gap:6px;justify-content:center}
+.logout-btn:hover{background:#FCEBEB;color:#dc2626;border-color:#dc2626}
+.main{flex:1;display:flex;flex-direction:column;margin-left:215px;min-width:0}
+.topbar{background:var(--s2);border-bottom:0.5px solid var(--border);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:9}
+.tb-title{font-size:14px;font-weight:600;color:var(--tp)}
+.tb-sub{font-size:11.5px;color:var(--tm);margin-top:1px}
+.content{flex:1;padding:1.25rem 1.5rem}
+.sec{display:none}.sec.on{display:block}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1rem}
+.stat{background:var(--s2);border:0.5px solid var(--border);border-radius:10px;padding:.75rem 1rem}
+.sl{font-size:11px;color:var(--ts);margin-bottom:3px}
+.sv{font-size:21px;font-weight:600;color:var(--tp)}
+.ss{font-size:10.5px;color:var(--tm);margin-top:2px}
+.card{background:var(--s2);border:0.5px solid var(--border);border-radius:10px;margin-bottom:1rem;overflow:hidden}
+.ch{padding:.75rem 1rem;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ct{font-size:13px;font-weight:500}
+.cb{padding:.85rem 1rem}
+.btn{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:5px 11px;border-radius:var(--r);border:0.5px solid var(--bstrong);background:transparent;color:var(--tp);cursor:pointer;transition:all .1s}
+.btn:hover{background:var(--s0)}
+.btn-navy{background:var(--navy);color:#c8d9f5;border-color:var(--navy)}.btn-navy:hover{background:var(--navy-dark)}
+.btn-green{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-red{background:#dc2626;color:#fff;border-color:#dc2626;font-size:11px;padding:4px 9px}
+.badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap;display:inline-block}
+.bg{background:#EAF3DE;color:#27500A}.ba{background:#FAEEDA;color:#633806}.bb{background:var(--navy-light);color:var(--navy)}.br{background:#FCEBEB;color:#791F1F}.bp{background:#EEEDFE;color:#3C3489}.bgy{background:var(--s0);color:var(--ts)}.bn{background:var(--navy);color:#c8d9f5}
+table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+th{text-align:left;font-size:11px;color:var(--tm);font-weight:500;padding:5px 0;border-bottom:0.5px solid var(--border)}
+td{padding:8px 4px 8px 0;border-bottom:0.5px solid var(--border);color:var(--tp);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--s0)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{margin-bottom:10px}
+.field label{font-size:11.5px;color:var(--ts);display:block;margin-bottom:4px;font-weight:500}
+.field input,.field select,.field textarea{width:100%;font-size:13px;padding:7px 10px;border:0.5px solid var(--bstrong);border-radius:var(--r);background:var(--s0);color:var(--tp)}
+.loading{display:flex;align-items:center;justify-content:center;padding:2rem;color:var(--tm);font-size:13px;gap:8px}
+.spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:2rem;color:var(--tm);font-size:13px}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--s2);border-radius:12px;padding:1.5rem;width:100%;max-width:500px;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:15px;font-weight:600;margin-bottom:1rem;color:var(--tp)}
+.modal-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:1rem;padding-top:1rem;border-top:0.5px solid var(--border)}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--navy);color:#fff;padding:.75rem 1.25rem;border-radius:10px;font-size:13px;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+.chat-wrap{display:flex;flex-direction:column;height:52vh}
+.chat-msgs{flex:1;overflow-y:auto;padding:.85rem;display:flex;flex-direction:column;gap:10px}
+.msg{display:flex;gap:9px;align-items:flex-start}
+.msg.me{flex-direction:row-reverse}
+.msg-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:600;flex-shrink:0;background:var(--navy-light);color:var(--navy)}
+.msg-body{max-width:70%}
+.msg-name{font-size:10.5px;color:var(--tm);margin-bottom:3px}
+.msg-text{font-size:13px;padding:8px 11px;border-radius:10px;background:var(--s0);color:var(--tp);border:0.5px solid var(--border);line-height:1.5}
+.msg.me .msg-text{background:var(--navy-light);color:var(--navy-dark);border-color:#a0b8de}
+.msg.me .msg-name{text-align:right}
+.chat-input-row{padding:.75rem;border-top:0.5px solid var(--border);display:flex;gap:8px}
+.chat-input-row input{flex:1;font-size:13px;padding:8px 11px;border:0.5px solid var(--bstrong);border-radius:var(--r);background:var(--s0);color:var(--tp)}
+.chat-tabs{display:flex;gap:5px;padding:.6rem 1rem;border-bottom:0.5px solid var(--border);flex-wrap:wrap}
+.chat-tab{font-size:11.5px;padding:3px 11px;border-radius:20px;cursor:pointer;border:0.5px solid var(--border);color:var(--ts);background:transparent}
+.chat-tab.active{background:var(--navy-light);color:var(--navy);border-color:var(--navy);font-weight:500}
+/* Notifications */
+.notif-item{display:flex;gap:10px;align-items:flex-start;padding:.65rem 1rem;border-bottom:0.5px solid var(--border);cursor:pointer}
+.notif-item:hover{background:var(--s0)}
+.notif-item.unread{background:#f0f4ff}
+.notif-dot{width:8px;height:8px;border-radius:50%;background:#dc2626;flex-shrink:0;margin-top:5px}
+.notif-dot.read{background:transparent;border:0.5px solid var(--border)}
+.notif-text{font-size:12px;color:var(--tp);line-height:1.4}
+.notif-time{font-size:10.5px;color:var(--tm);margin-top:2px}
+/* DM */
+.dm-person{display:flex;align-items:center;gap:10px;padding:.65rem 1rem;cursor:pointer;border-bottom:0.5px solid var(--border)}
+.dm-person:hover{background:var(--s0)}
+.dm-person-av{width:34px;height:34px;border-radius:50%;background:var(--navy-light);color:var(--navy);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.dm-unread-dot{width:8px;height:8px;border-radius:50%;background:#1D9E75;flex-shrink:0}
+.dm-chat-header{padding:.65rem 1rem;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:10px}
+.dm-msgs{height:240px;overflow-y:auto;padding:.65rem;display:flex;flex-direction:column;gap:8px}
+.dm-input-row{padding:.5rem;border-top:0.5px solid var(--border);display:flex;gap:6px}
+.dm-input-row input{flex:1;font-size:12.5px;padding:7px 9px;border:0.5px solid var(--bstrong);border-radius:var(--r);background:var(--s0);color:var(--tp)}
+.push-banner{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:.85rem 1.5rem;border-radius:12px;font-size:13px;z-index:500;display:flex;align-items:center;gap:12px;box-shadow:0 8px 30px rgba(0,0,0,.25);animation:slideUp .3s ease}
+@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.leave-card{border:0.5px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:.75rem}
+.role-tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;margin-left:6px}
+
+
+
+/* Read receipts */
+.msg-ticks{font-size:11px;margin-left:4px;vertical-align:middle}
+.ticks-sent{color:var(--tm)}
+.ticks-delivered{color:var(--tm)}
+.ticks-read{color:#53bdeb}
+
+/* ── PWA & MOBILE RESPONSIVE ── */
+/* Install banner */
+#pwa-install-banner{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--navy);color:#fff;padding:14px 20px;z-index:9999;flex-direction:row;align-items:center;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,.25)}
+#pwa-install-banner.show{display:flex}
+.pwa-install-icon{width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+/* Mobile sidebar toggle */
+#mob-menu-btn{display:none;background:none;border:none;color:var(--tp);font-size:22px;cursor:pointer;padding:4px 8px}
+#sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9}
+/* Mobile layout */
+@media(max-width:768px){
+  #mob-menu-btn{display:block}
+  .sidebar{transform:translateX(-100%);transition:transform .25s ease;z-index:100}
+  .sidebar.mob-open{transform:translateX(0)}
+  #sidebar-overlay.show{display:block}
+  .main{margin-left:0!important;width:100vw;overflow-x:hidden}
+  .topbar{padding:.5rem .75rem;position:sticky;top:0;z-index:9}
+  .content{padding:.65rem .75rem;width:100%;overflow-x:hidden}
+  .stats{grid-template-columns:repeat(2,1fr)!important;gap:6px;margin-bottom:.75rem}
+  .stat{padding:.6rem .75rem}
+  .g2{grid-template-columns:1fr!important}
+  table{font-size:11px;width:100%;display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  th,td{padding:5px 4px 5px 0;white-space:nowrap}
+  .modal{max-width:100vw!important;max-height:100vh!important;margin:0;border-radius:0;width:100vw}
+  .modal-bg{align-items:flex-end}
+  #notif-panel,#dm-panel{width:100vw!important;max-width:100vw}
+  .push-banner{left:.5rem;right:.5rem;transform:none;bottom:.5rem;max-width:calc(100vw - 1rem);font-size:12px}
+  .shell{flex-direction:column}
+  .chat-wrap{height:60vh}
+  .chat-input-row{padding:.5rem;gap:5px;background:var(--s2);position:sticky;bottom:0}
+  .chat-input-row input{font-size:14px;min-height:36px}
+  /* DM panel full screen on mobile */
+  #dm-panel{top:0!important;height:100vh!important;height:100dvh!important}
+  #dm-view-chat{height:100%!important}
+  #dm-msgs{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  /* DM input always visible */
+  #dm-view-chat>div:last-child{
+    position:sticky;bottom:0;background:var(--s2);z-index:5;
+    padding:.5rem;padding-bottom:calc(.5rem + env(safe-area-inset-bottom));
+  }
+  .dm-input-row{padding:.5rem;gap:5px}
+  #dm-input{font-size:16px!important;min-height:40px;border-radius:20px}
+  .card{border-radius:8px}
+  .btn{padding:5px 9px;font-size:12px}
+  .btn-navy{padding:6px 12px}
+  .ch{padding:.6rem .75rem}
+  .cb{padding:.65rem .75rem}
+  .ng{padding:8px .75rem 2px}
+  .ni{padding:8px .75rem}
+}
+@media(max-width:480px){
+  .stats{grid-template-columns:1fr 1fr!important;gap:5px}
+  .sv{font-size:18px!important}
+  .sl{font-size:10px}
+  .topbar .tb-title{font-size:13px}
+  .topbar .tb-sub{display:none}
+  #dm-input{font-size:16px!important}
+}
+/* Fix iOS keyboard pushing content */
+@supports(-webkit-touch-callout:none){
+  #dm-view-chat{height:-webkit-fill-available}
+  .chat-wrap{height:55svh}
+}
+/* Safe area for notched phones */
+@supports(padding:env(safe-area-inset-bottom)){
+  .chat-input-row,.dm-input-row{padding-bottom:calc(.65rem + env(safe-area-inset-bottom))}
+  #pwa-install-banner{padding-bottom:calc(14px + env(safe-area-inset-bottom))}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div class="login-page" id="login-page">
+ <div class="login-box">
+  <div class="login-logo">
+   <div class="login-logo-icon" style="background:transparent;padding:0;overflow:hidden;border-radius:10px"><img src="" class="rbs-logo-img" style="width:44px;height:44px;object-fit:contain"></div>
+   <div>
+    <div class="login-title">Royal Business Solutions</div>
+    <div class="login-sub">Staff Portal — Sign in to your account</div>
+   </div>
+  </div>
+  <div class="login-field">
+   <label>Email address</label>
+   <input type="email" id="login-email" placeholder="yourname@rbs.co.uk" onkeydown="if(event.key==='Enter')doLogin()">
+  </div>
+  <div class="login-field">
+   <label>Password</label>
+   <input type="password" id="login-pass" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()">
+  </div>
+  <button class="login-btn" onclick="doLogin()">Sign in</button>
+  <div class="login-err" id="login-err">Incorrect email or password. Please try again.</div>
+  <div style="margin-top:1rem;text-align:center;font-size:11.5px;color:var(--tm)">Contact HR or Admin to reset your password</div>
+ </div>
+</div>
+
+
+<!-- MAIN SHELL -->
+<div class="shell" id="shell">
+ <div class="sidebar">
+  <div class="logo-area">
+   <div class="logo">
+    <div class="logo-icon" style="background:transparent;padding:0;overflow:hidden"><img src="" class="rbs-logo-img" style="width:32px;height:32px;object-fit:contain;border-radius:6px"></div>
+    <div>
+     <div style="font-size:12.5px;font-weight:600;color:var(--tp)">Royal Business</div>
+     <div style="font-size:9.5px;color:var(--tm);text-transform:uppercase;letter-spacing:.03em">Solutions</div>
+    </div>
+   </div>
+   <div class="user-chip">
+    <div class="user-av" id="user-av">?</div>
+    <div style="min-width:0">
+     <div class="user-chip-name" id="user-chip-name">—</div>
+     <div class="user-chip-role" id="user-chip-role">—</div>
+    </div>
+   </div>
+  </div>
+  <div class="nav-scroll" id="nav-area"></div>
+  <button class="logout-btn" onclick="doLogout()"><i class="ti ti-logout"></i> Sign out</button>
+ </div>
+
+ <div class="main">
+  <div class="topbar">
+   <div style="display:flex;align-items:center;gap:10px">
+    <button id="mob-menu-btn" onclick="toggleMobileMenu()" title="Menu"><i class="ti ti-menu-2"></i></button>
+    <div>
+     <div class="tb-title" id="pg-title">Dashboard</div>
+     <div class="tb-sub" id="pg-sub">Royal Business Solutions</div>
+    </div>
+   </div>
+   <div style="display:flex;gap:7px;align-items:center">
+    <button class="btn" onclick="refreshAll()"><i class="ti ti-refresh"></i> Refresh</button>
+    <!-- Notification Bell -->
+    <div style="position:relative">
+     <button class="btn" onclick="toggleNotifPanel()" id="notif-btn" title="Notifications" style="padding:6px 10px">
+      <i class="ti ti-bell" style="font-size:16px"></i>
+      <span id="notif-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:#dc2626;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:20px;min-width:16px;text-align:center">0</span>
+     </button>
+     <!-- Notification Panel -->
+     <div id="notif-panel" style="display:none;position:absolute;top:calc(100% + 8px);right:0;width:320px;background:var(--s2);border:0.5px solid var(--border);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.15);z-index:200;overflow:hidden">
+      <div style="padding:.75rem 1rem;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+       <span style="font-size:13px;font-weight:600">Notifications</span>
+       <button onclick="clearNotifs()" style="font-size:11px;color:var(--tm);background:none;border:none;cursor:pointer">Clear all</button>
+      </div>
+      <div id="notif-list" style="max-height:340px;overflow-y:auto"></div>
+     </div>
+    </div>
+    <!-- DM Button -->
+    <div style="position:relative">
+     <button class="btn" onclick="toggleDMPanel()" id="dm-btn" title="Direct Messages" style="padding:6px 10px">
+      <i class="ti ti-messages" style="font-size:16px"></i>
+      <span id="dm-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:#1D9E75;color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:20px;min-width:16px;text-align:center">0</span>
+     </button>
+    </div>
+    <button class="btn btn-navy" id="add-btn" onclick="openAddModal()" style="display:none"><i class="ti ti-plus"></i> Add new</button>
+   </div>
+  </div>
+
+  <div class="content">
+
+   <!-- DASHBOARD -->
+   <div class="sec on" id="s-dashboard">
+    <div class="stats">
+     <div class="stat"><div class="sl">My leads</div><div class="sv" id="d-leads">—</div><div class="ss">Assigned to me</div></div>
+     <div class="stat"><div class="sl">My tasks</div><div class="sv" id="d-tasks">—</div><div class="ss">Active</div></div>
+     <div class="stat"><div class="sl">My attendance</div><div class="sv" id="d-att">—</div><div class="ss">This month</div></div>
+     <div class="stat" id="d-team-card" style="display:none"><div class="sl">Team size</div><div class="sv" id="d-team">—</div><div class="ss">All employees</div></div>
+     <div class="stat" id="d-att-today-card" style="display:none"><div class="sl">Present today</div><div class="sv" id="d-att-today" style="color:#1D9E75">—</div><div class="ss">of team</div></div>
+    </div>
+    <div class="g2">
+     <div class="card" style="margin:0"><div class="ch"><span class="ct">My recent leads</span></div><div class="cb" style="padding:0 1rem" id="dash-leads"></div></div>
+     <div class="card" style="margin:0"><div class="ch"><span class="ct">My tasks</span></div><div class="cb" style="padding:0 1rem" id="dash-tasks"></div></div>
+    </div>
+   </div>
+
+   <!-- MY LEADS -->
+   <div class="sec" id="s-leads">
+    <div class="stats">
+     <div class="stat"><div class="sl">My leads</div><div class="sv" id="ml-total">—</div></div>
+     <div class="stat"><div class="sl">Signed</div><div class="sv" id="ml-signed" style="color:var(--navy)">—</div></div>
+     <div class="stat"><div class="sl">In pipeline</div><div class="sv" id="ml-pipe">—</div></div>
+     <div class="stat"><div class="sl">Lost</div><div class="sv" id="ml-lost" style="color:#dc2626">—</div></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+     <input type="text" placeholder="Search leads..." oninput="filterTable('lead-table',this.value)" style="font-size:12px;padding:6px 10px;border:0.5px solid var(--bstrong);border-radius:var(--r);background:var(--s2);width:220px">
+     <div style="display:flex;gap:6px"><button class="btn" onclick="downloadLeadsReport()"><i class="ti ti-download"></i></button><button class="btn btn-navy" onclick="openAddModal()"><i class="ti ti-plus"></i> Add lead</button></div>
+    </div>
+    <div class="card"><div class="cb" style="padding:0 1rem" id="lead-table"><div class="loading"><div class="spinner"></div>Loading...</div></div></div>
+   </div>
+
+   <!-- ALL CUSTOMERS (admin/manager/hr) -->
+   <div class="sec" id="s-customers">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+     <input type="text" placeholder="Search customers..." oninput="filterTable('cust-table',this.value)" style="font-size:12px;padding:6px 10px;border:0.5px solid var(--bstrong);border-radius:var(--r);background:var(--s2);width:220px">
+     <div style="display:flex;gap:6px"><button class="btn" onclick="downloadCustomersReport()"><i class="ti ti-download"></i></button><button class="btn btn-navy" onclick="openAddModal()"><i class="ti ti-plus"></i> Add customer</button></div>
+    </div>
+    <div class="card"><div class="cb" style="padding:0 1rem" id="cust-table"><div class="loading"><div class="spinner"></div>Loading...</div></div></div>
+   </div>
+
+   <!-- TASKS -->
+   <div class="sec" id="s-tasks">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+     <span style="font-size:12px;color:var(--ts)" id="tasks-label">My tasks</span>
+     <div style="display:flex;gap:6px"><button class="btn" id="tasks-dl-btn" onclick="downloadTasksReport()" style="display:none"><i class="ti ti-download"></i></button><button class="btn btn-navy" onclick="openAddModal()"><i class="ti ti-plus"></i> Add task</button></div>
+    </div>
+    <div class="card"><div class="cb" style="padding:0 1rem" id="task-table"><div class="loading"><div class="spinner"></div>Loading...</div></div></div>
+   </div>
+
+   <!-- ATTENDANCE -->
+   <div class="sec" id="s-attendance">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+     <span style="font-size:12px;color:var(--ts)" id="att-label">My attendance</span>
+     <button class="btn btn-navy" onclick="openAddModal()"><i class="ti ti-plus"></i> Mark attendance</button>
+    </div>
+    <div class="card"><div class="cb" style="padding:0 1rem" id="att-table"><div class="loading"><div class="spinner"></div>Loading...</div></div></div>
+   </div>
+
+   <!-- LEAVE -->
+   <div class="sec" id="s-leave">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px" id="leave-header">
+     <span style="font-size:13px;font-weight:500;color:var(--tp)" id="leave-header-title">Leave</span>
+     <button class="btn btn-navy" id="leave-apply-btn" onclick="openAddModal()"><i class="ti ti-plus"></i> Apply for leave</button>
+    </div>
+    <div class="card"><div class="cb" id="leave-table"><div class="loading"><div class="spinner"></div>Loading...</div></div></div>
+   </div>
+
+   <!-- PAYROLL -->
+   <div class="sec" id="s-payroll">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:8px"><button class="btn" onclick="downloadPayrollReport()"><i class="ti ti-download"></i> Download payroll report</button></div>
+    <div class="card"><div class="cb" style="padding:0 1rem" id="pay-table"><div class="loading"><div class="spinner"></div>Loading...</div></div></div>
+   </div>
+
+   <!-- OBJECTIONS -->
+   <div class="sec" id="s-objections">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+     <span style="font-size:12px;color:var(--ts)">Objection queue</span>
+     <button class="btn btn-navy" onclick="openAddModal()"><i class="ti ti-plus"></i> Log objection</button>
+    </div>
+    <div class="card"><div class="cb" style="padding:0 1rem" id="obj-table"><div class="loading"><div class="spinner"></div>Loading...</div></div></div>
+   </div>
+
+   <!-- EMPLOYEES (admin/hr) -->
+   <div class="sec" id="s-employees">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+     <input type="text" placeholder="Search employees..." oninput="filterTable('emp-table',this.value)" style="font-size:12px;padding:6px 10px;border:0.5px solid var(--bstrong);border-radius:var(--r);background:var(--s2);width:220px">
+     <div style="display:flex;gap:6px"><button class="btn" onclick="downloadEmployeesReport()"><i class="ti ti-download"></i> Export</button><button class="btn btn-navy" onclick="openAddModal()"><i class="ti ti-plus"></i> Add employee</button></div>
+    </div>
+    <div class="card"><div class="cb" style="padding:0 1rem" id="emp-table"><div class="loading"><div class="spinner"></div>Loading...</div></div></div>
+   </div>
+
+   <!-- USER MANAGEMENT (admin/hr) -->
+   <div class="sec" id="s-users">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+     <span style="font-size:12px;color:var(--ts)">Manage staff logins — <b id="user-count">0</b> accounts</span>
+     <button class="btn btn-navy" onclick="openAddModal()"><i class="ti ti-plus"></i> Create login</button>
+    </div>
+    <div class="card"><div class="cb" style="padding:0 1rem" id="user-table"><div class="loading"><div class="spinner"></div>Loading...</div></div></div>
+   </div>
+
+   <!-- CHAT -->
+   <div class="sec" id="s-chat">
+    <div class="card" style="margin:0">
+     <div class="chat-tabs" id="chat-tab-container">
+      <div class="chat-tab active" onclick="switchChat('general',this)"># General</div>
+      <div class="chat-tab" onclick="switchChat('sales',this)"># Sales</div>
+      <div class="chat-tab" onclick="switchChat('objections',this)"># Objections</div>
+      <div class="chat-tab" onclick="switchChat('hr',this)"># HR</div>
+      <div class="chat-tab" onclick="switchChat('management',this)"># Management</div>
+      <div class="chat-tab" onclick="switchChat('sales',this)"># Sales</div>
+      <div class="chat-tab" onclick="switchChat('objections',this)"># Objections</div>
+      <div class="chat-tab" onclick="switchChat('hr',this)"># HR</div>
+     </div>
+     <div class="chat-wrap">
+      <div class="chat-msgs" id="chat-msgs">
+       <div class="msg"><div class="msg-av" style="background:var(--navy);color:#c8d9f5">RB</div><div class="msg-body"><div class="msg-name">Royal Business Solutions</div><div class="msg-text">Welcome! Send messages, images and files to your team 📸</div></div></div>
+      </div>
+      <!-- Image/file preview bar — hidden until file selected -->
+      <div id="img-preview-bar" style="display:none;padding:8px 12px;border-top:0.5px solid var(--border);background:var(--s0);flex-direction:row;align-items:center;gap:10px">
+       <img id="img-preview" style="height:56px;width:56px;border-radius:6px;object-fit:cover;border:0.5px solid var(--border);display:none">
+       <i class="ti ti-file" id="file-icon" style="font-size:28px;color:var(--navy);display:none"></i>
+       <div style="flex:1;min-width:0">
+        <div style="font-size:12.5px;font-weight:500;color:var(--tp);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="img-preview-name"></div>
+        <div style="font-size:11px;color:var(--tm)" id="img-preview-size"></div>
+       </div>
+       <button class="btn" onclick="clearImage()" style="padding:4px 10px;font-size:12px;flex-shrink:0"><i class="ti ti-x"></i> Remove</button>
+      </div>
+      <div class="chat-input-row">
+       <input type="file" id="img-input" accept="image/*,application/pdf,.doc,.docx,.xlsx,.csv,.png,.jpg,.jpeg,.gif,.webp" style="display:none" onchange="previewImage(this)">
+       <button class="btn" onclick="document.getElementById('img-input').click()" title="Attach image or file" style="padding:7px 10px;flex-shrink:0"><i class="ti ti-paperclip" style="font-size:17px"></i></button>
+       <input type="text" id="chat-input" placeholder="Message #general..." onkeydown="if(event.key==='Enter')sendMsg()" style="flex:1">
+       <button class="btn btn-navy" onclick="sendMsg()" style="flex-shrink:0;padding:7px 14px"><i class="ti ti-send"></i> Send</button>
+      </div>
+     </div>
+    </div>
+   </div>
+
+  </div>
+ </div>
+</div>
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div id="sidebar-overlay" onclick="closeMobileMenu()"></div>
+
+<!-- PWA INSTALL BANNER -->
+<div id="pwa-install-banner">
+ <div class="pwa-install-icon">👑</div>
+ <div style="flex:1;min-width:0">
+  <div style="font-size:14px;font-weight:600">Install RBS Portal</div>
+  <div style="font-size:12px;opacity:.85;margin-top:2px">Add to your home screen for quick access</div>
+ </div>
+ <button onclick="installPWA()" style="background:#fff;color:var(--navy);border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0">Install</button>
+ <button onclick="dismissInstall()" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:20px;cursor:pointer;padding:4px 8px;flex-shrink:0"><i class="ti ti-x"></i></button>
+</div>
+
+<!-- NOTIFICATION SLIDE PANEL -->
+<div id="notif-overlay" onclick="closeNotifPanel()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:300"></div>
+<div id="notif-panel" style="display:none;position:fixed;top:0;right:0;width:360px;height:100vh;background:var(--s2);border-left:0.5px solid var(--border);z-index:301;flex-direction:column;box-shadow:-8px 0 30px rgba(0,0,0,.15)">
+ <div style="padding:1rem 1.25rem;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+  <span style="font-size:14px;font-weight:600">🔔 Notifications</span>
+  <div style="display:flex;gap:10px;align-items:center">
+   <button onclick="clearNotifs()" style="font-size:12px;color:var(--tm);background:none;border:none;cursor:pointer">Clear all</button>
+   <button onclick="closeNotifPanel()" style="background:none;border:none;cursor:pointer;color:var(--tm);font-size:18px"><i class="ti ti-x"></i></button>
+  </div>
+ </div>
+ <div id="notif-list" style="flex:1;overflow-y:auto"></div>
+</div>
+
+<!-- DM SLIDE PANEL -->
+<div id="dm-overlay" onclick="closeDMPanel()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:300"></div>
+<div id="dm-panel" style="display:none;position:fixed;top:0;right:0;width:390px;height:100vh;background:var(--s2);border-left:0.5px solid var(--border);z-index:301;flex-direction:column;box-shadow:-8px 0 30px rgba(0,0,0,.15)">
+ <div id="dm-view-people" style="display:flex;flex-direction:column;height:100%">
+  <div style="padding:1rem 1.25rem;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+   <span style="font-size:14px;font-weight:600">💬 Direct Messages</span>
+   <button onclick="closeDMPanel()" style="background:none;border:none;cursor:pointer;color:var(--tm);font-size:18px"><i class="ti ti-x"></i></button>
+  </div>
+  <div style="padding:.65rem 1rem;border-bottom:0.5px solid var(--border);flex-shrink:0">
+   <input type="text" placeholder="Search colleagues..." oninput="filterDMList(this.value)" style="width:100%;font-size:13px;padding:8px 10px;border:0.5px solid var(--bstrong);border-radius:var(--r);background:var(--s0);color:var(--tp)">
+  </div>
+  <div id="dm-people-list" style="flex:1;overflow-y:auto"></div>
+ </div>
+ <div id="dm-view-chat" style="display:none;flex-direction:column;height:100%">
+  <div style="padding:.85rem 1.25rem;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0">
+   <button onclick="showDMPeople()" style="background:none;border:none;cursor:pointer;color:var(--navy);font-size:18px;padding:0;flex-shrink:0"><i class="ti ti-arrow-left"></i></button>
+   <div id="dm-chat-av" style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0"></div>
+   <div style="flex:1;min-width:0">
+    <div id="dm-chat-name" style="font-size:14px;font-weight:600;color:var(--tp)"></div>
+    <div id="dm-chat-role" style="font-size:11.5px;color:var(--tm)">Direct message</div>
+   </div>
+   <button onclick="closeDMPanel()" style="background:none;border:none;cursor:pointer;color:var(--tm);font-size:18px"><i class="ti ti-x"></i></button>
+  </div>
+  <div id="dm-msgs" style="flex:1;overflow-y:auto;padding:.85rem;display:flex;flex-direction:column;gap:10px;background:var(--s0)"></div>
+  <div style="padding:.65rem;border-top:0.5px solid var(--border);display:flex;gap:7px;align-items:center;flex-shrink:0">
+   <input type="file" id="dm-file-input" accept="image/*" style="display:none" onchange="sendDMFile(this)">
+   <button class="btn" onclick="document.getElementById('dm-file-input').click()" style="padding:7px 10px;flex-shrink:0"><i class="ti ti-photo" style="font-size:17px"></i></button>
+   <input type="text" id="dm-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendDM()" style="flex:1;font-size:13px;padding:9px 12px;border:0.5px solid var(--bstrong);border-radius:var(--r);background:var(--s0);color:var(--tp)">
+   <button class="btn btn-navy" onclick="sendDM()" style="padding:8px 14px;flex-shrink:0"><i class="ti ti-send"></i></button>
+  </div>
+ </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal-bg">
+ <div class="modal">
+  <div class="modal-title" id="modal-title">Add record</div>
+  <div id="modal-body"></div>
+  <div class="modal-foot">
+   <button class="btn" onclick="closeModal()">Cancel</button>
+   <button class="btn btn-navy" onclick="saveRecord()" id="modal-save-btn">Save</button>
+  </div>
+ </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- NOTIFICATION PANEL (slide in from right) -->
+<div id="notif-overlay" onclick="closeNotifPanel()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:300"></div>
+<div id="notif-panel" style="display:none;position:fixed;top:0;right:0;width:360px;height:100vh;background:var(--s2);border-left:0.5px solid var(--border);z-index:301;flex-direction:column;box-shadow:-8px 0 30px rgba(0,0,0,.12)">
+ <div style="padding:1rem 1.25rem;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+  <span style="font-size:14px;font-weight:600">🔔 Notifications</span>
+  <div style="display:flex;gap:8px;align-items:center">
+   <button onclick="clearNotifs()" style="font-size:11.5px;color:var(--tm);background:none;border:none;cursor:pointer">Clear all</button>
+   <button onclick="closeNotifPanel()" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--tm)"><i class="ti ti-x"></i></button>
+  </div>
+ </div>
+ <div id="notif-list" style="flex:1;overflow-y:auto"></div>
+</div>
+
+<!-- DM FULL PANEL (slide in from right) -->
+<div id="dm-overlay" onclick="closeDMPanel()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:300"></div>
+<div id="dm-panel" style="display:none;position:fixed;top:0;right:0;width:380px;height:100vh;background:var(--s2);border-left:0.5px solid var(--border);z-index:301;flex-direction:column;box-shadow:-8px 0 30px rgba(0,0,0,.12)">
+ <!-- People list view -->
+ <div id="dm-view-people" style="display:flex;flex-direction:column;height:100%">
+  <div style="padding:1rem 1.25rem;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+   <span style="font-size:14px;font-weight:600">💬 Direct Messages</span>
+   <button onclick="closeDMPanel()" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--tm)"><i class="ti ti-x"></i></button>
+  </div>
+  <div style="padding:.65rem 1rem;border-bottom:0.5px solid var(--border)">
+   <input type="text" placeholder="Search colleagues..." oninput="filterDMList(this.value)" style="width:100%;font-size:13px;padding:7px 10px;border:0.5px solid var(--bstrong);border-radius:var(--r);background:var(--s0);color:var(--tp)">
+  </div>
+  <div id="dm-people-list" style="flex:1;overflow-y:auto"></div>
+ </div>
+ <!-- Chat view -->
+ <div id="dm-view-chat" style="display:none;flex-direction:column;height:100%">
+  <div style="padding:.75rem 1.25rem;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0">
+   <button onclick="showDMPeople()" style="background:none;border:none;cursor:pointer;color:var(--navy);padding:0;font-size:16px"><i class="ti ti-arrow-left"></i></button>
+   <div id="dm-chat-av" class="dm-person-av"></div>
+   <div style="flex:1;min-width:0">
+    <div id="dm-chat-name" style="font-size:13.5px;font-weight:600;color:var(--tp)"></div>
+    <div id="dm-chat-role" style="font-size:11px;color:var(--tm)"></div>
+   </div>
+   <button onclick="closeDMPanel()" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--tm)"><i class="ti ti-x"></i></button>
+  </div>
+  <div id="dm-msgs" style="flex:1;overflow-y:auto;padding:.85rem;display:flex;flex-direction:column;gap:10px">
+   <div class="loading"><div class="spinner"></div>Loading...</div>
+  </div>
+  <div style="padding:.65rem;border-top:0.5px solid var(--border);display:flex;gap:6px;align-items:center;flex-shrink:0">
+   <input type="file" id="dm-file-input" accept="image/*,application/pdf,.doc,.docx,.xlsx,.csv" style="display:none" onchange="sendDMFile(this)">
+   <button class="btn" onclick="document.getElementById('dm-file-input').click()" style="padding:6px 9px;flex-shrink:0" title="Send image or file"><i class="ti ti-paperclip" style="font-size:16px"></i></button>
+   <input type="text" id="dm-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendDM()" style="flex:1;font-size:13px;padding:8px 10px;border:0.5px solid var(--bstrong);border-radius:var(--r);background:var(--s0);color:var(--tp)">
+   <button class="btn btn-navy" onclick="sendDM()" style="flex-shrink:0;padding:7px 14px"><i class="ti ti-send"></i></button>
+  </div>
+ </div>
+</div>
+
+
+<script>
+const _L="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEBLAEsAAD/4RDsRXhpZgAATU0AKgAAAAgABAE7AAIAAAALAAAISodpAAQAAAABAAAIVpydAAEAAAAWAAAQzuocAAcAAAgMAAAAPgAAAAAc6gAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFN5ZWQgVXNtYW4AAAAFkAMAAgAAABQAABCkkAQAAgAAABQAABC4kpEAAgAAAAM2NwAAkpIAAgAAAAM2NwAA6hwABwAACAwAAAiYAAAAABzqAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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b3JnL2RjL2VsZW1lbnRzLzEuMS8iPjxkYzpjcmVhdG9yPjxyZGY6U2VxIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+PHJkZjpsaT5TeWVkIFVzbWFuPC9yZGY6bGk+PC9yZGY6U2VxPg0KCQkJPC9kYzpjcmVhdG9yPjwvcmRmOkRlc2NyaXB0aW9uPjwvcmRmOlJERj48L3g6eG1wbWV0YT4NCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgPD94cGFja2V0IGVuZD0ndyc/Pv/bAEMAEAsMDgwKEA4NDhIREBMYKBoYFhYYMSMlHSg6Mz08OTM4N0BIXE5ARFdFNzhQbVFXX2JnaGc+TXF5cGR4XGVnY//bAEMBERISGBUYLxoaL2NCOEJjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY//AABEIAmMCXAMBIgACEQEDEQH/xAAfAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgv/xAC1EAACAQMDAgQDBQUEBAAAAX0BAgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQzYnKCCQoWFxgZGiUmJygpKjQ1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4eLj5OXm5+jp6vHy8/T19vf4+fr/xAAfAQADAQEBAQEBAQEBAAAAAAAAAQIDBAUGBwgJCgv/xAC1EQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/APQKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKQkKCSQAOpNZd34j0mzyJLyNmH8Mfzn9KANWiuRuvHdsuRa2csnvIwX+WayrjxvqcmREkEI7YUk/qf6U7Aeh0V5XN4j1if79/KP9zCfyxW74Furi51K5+0XEsuIv43Ldx60WA7eiiikBznjW8ubLToHtZ3hdptpKHGRg1z3na1/0Fpv++jW14/8A+QXbf9dx/wCgmsymBB52tf8AQWm/76NHna1/0Fpv++jU9FFwIDNrQBI1WYn03Guo8I6k+o6ODO5eeJyjlup7g/kf0rnqf4Zuf7P8RSWzHEV4Pl/3uo/qPxoA7qiiikAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUlAC0Vgat4s0/T90cTfaph/DGflH1b/AAzXHan4l1LUsq03kwn/AJZxcD8T1NOwHd6j4i0zTcrNcB5B/wAs4/mb/AfjXMX/AI5upMrYwJCv99/mb/AfrXJ0U7AWrzUr2+Obq5ll9mbgfh0qrRRTAKKKKACuq+H7D+1Lle5hz/48P8a5Wuq+H6sdVuHCnaIME44BLDH8jQ9gO+oooqAOV8f/APILtv8AruP/AEE1mVp+P/8AkF23/Xcf+gmsymAUUUUgCqepRv5aXERKywNvUjqKuUEAjB5BpgdjpN+mp6bDdJj51+YD+Fu4/OrlcN4Wvv7L1V9OmbFvcnMRPZu359PwFdzSYBRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUA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l0xPtN1iS+kGWY87PYf1Nb9FFIAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAEYBlKsAQeCD3rmNY8G2t3ulsCLaU87P4D/h+H5V1FFAHkeoaXeaZLsu4Gjz0bqrfQ1Tr2WWKOeNo5o1kRuCrDINczqfgm0uMyWEhtn/ALh+ZD/UVVwOAorT1HQNS03Jnt2MY/5aR/Mv59vxrMpgFFFFABRRRQAqsyMGUlWU5BBwQa9F8KeIG1aNra5H+lRLksBw69M/WvOa6j4f/wDIYn/69z/6EtJgegUUUVIHK+P/APkF23/Xcf8AoJrMrT8f/wDILtv+u4/9BNZlMAooopAFIzBFLMcADJNLVSeOXUL6HTbb78h+c/3R/nmmBe8M6adX1A6jcp/osBxEp6M3/wBbrXdVBZWsVjaRW0C7Y41wP8anpAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAlZd/wCHdLv8tLbKkh/ji+U/pwfxrVooA4e98CSLlrG7Vx2SUYP5j/CsK78P6rZ582ykKj+KMbx+leq0U7geMEEEgggjsaSvYLmytbsYubaKX/fQGsu48JaPPki2aInvG5H6dKdwPM66v4ff8hK6/wCuP9RWhN4DtG/1F5Mn++ob/Crvh7w2+iXc0puVmWRNowm0jnPqaGwOgoooqQOV8f8A/ILtv+u4/wDQTWZWn4//AOQVbf8AXcf+gmsb7Xb/APPeP/voUwJqKh+12/8Az3j/AO+hR9rt/wDnvH/30KAHTyrBC0jdFH51s+CtNMdtJqc4/fXP3M9kz/U/yFc8Iv7X1O2sIG3IzbpGU5wB1/SvRo41ijWONQqIAqgdgKAH0UUUgCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigCpqGm2mpxLFeReYituA3EYP4Gs/wD4RLRP+fL/AMiv/jW3RQBif8Ilon/Pl/5Ff/Gj/hEtE/58v/Ir/wCNbdFFwM/T9E07TJmls7fy5GXaW3s3H4mtCiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA//2Q==";
+// =====================
+// FIREBASE — must be FIRST so db is available to all functions
+// =====================
+const firebaseConfig = {
+  apiKey: "AIzaSyAewi0w9hTaqNky97K8SC3J1Ui4YoWaaN4",
+  authDomain: "rbs-portal-5550e.firebaseapp.com",
+  databaseURL: "https://rbs-portal-5550e-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "rbs-portal-5550e",
+  storageBucket: "rbs-portal-5550e.firebasestorage.app",
+  messagingSenderId: "281515106460",
+  appId: "1:281515106460:web:3aade9f54ba5c7b5630d59"
+};
+
+let db = null;
+try {
+  const app = firebase.apps.length ? firebase.apps[0] : firebase.initializeApp(firebaseConfig);
+  db = firebase.database();
+} catch(e) { console.error('Firebase init error:', e); }
+
+// =====================
+// USER ACCOUNTS (Firebase + localStorage fallback)
+// =====================
+const DEFAULT_USERS = [
+  {email:'admin@rbs.co.uk', password:'Admin@RBS2026', name:'Admin', role:'admin', dept:'Admin', active:true},
+  {email:'hr@rbs.co.uk', password:'HR@RBS2026', name:'HR Manager', role:'hr', dept:'HR', active:true}
+];
+let _usersCache = null;
+
+async function getUsers() {
+  if(_usersCache && _usersCache.length > 0) return _usersCache;
+  if(db) {
+    try {
+      const snap = await db.ref('rbs_accounts').once('value');
+      if(snap.exists()) {
+        const val = snap.val();
+        // Handle both array and object formats from Firebase
+        let users = Array.isArray(val) ? val : Object.values(val);
+        // Filter out null/undefined entries
+        users = users.filter(u => u && u.email && u.password);
+        if(users.length > 0) {
+          _usersCache = users;
+          return _usersCache;
+        }
+      }
+      // Firebase empty — seed defaults
+      const obj = {};
+      DEFAULT_USERS.forEach((u,i) => { obj['u'+i] = u; });
+      await db.ref('rbs_accounts').set(obj);
+      _usersCache = [...DEFAULT_USERS];
+      return _usersCache;
+    } catch(e) { console.warn('Firebase getUsers failed, using localStorage:', e); }
+  }
+  // Fallback to localStorage
+  try {
+    const d = localStorage.getItem('rbs_users');
+    const parsed = d ? JSON.parse(d) : [];
+    _usersCache = parsed.length > 0 ? parsed : [...DEFAULT_USERS];
+  } catch(e) {
+    _usersCache = [...DEFAULT_USERS];
+  }
+  return _usersCache;
+}
+
+async function saveUsers(users) {
+  _usersCache = users;
+  localStorage.setItem('rbs_users', JSON.stringify(users));
+  if(!db) return;
+  try {
+    const obj = {};
+    users.forEach((u,i) => { obj['u'+i] = u; });
+    await db.ref('rbs_accounts').set(obj);
+  } catch(e) { console.error('saveUsers error:', e); }
+}
+
+// =====================
+// GLOBAL STATE
+// =====================
+let currentUser = null;
+let currentSection = 'dashboard';
+let allData = {};
+let currentModalTable = '';
+let editingRecordId = null;
+let editingTableKey = null;
+let recCache = {};
+let pendingImageData = null;
+let pendingImageName = null;
+let pendingImageFile = null;
+let currentChannel = 'general';
+let chatListeners = {};
+let localMsgs = {general:[], sales:[], objections:[], hr:[]};
+let notifications = [];
+let notifCount = 0;
+let lastSeenTs = {};
+let dmUnreadCount = 0;
+let dmUnreadPerSender = {}; // {senderEmail: unreadCount}
+let activeDMWith = null;
+let dmChatListener = null;
+let allDMUsers = [];
+
+// =====================
+// AIRTABLE
+// =====================
+const API_KEY = 'patvRW4QnfPp02kYq.dcc0e92be04d5aa8283eb299430a8ba7166e6e00c6369e7658f89c3a6f172a15';
+const BASE_ID = 'app3u0EG8S2CUeoiV';
+const TABLES = {
+  employees:'tblW3HwkoJOIKOesU', attendance:'tblxAH0B9idIG4bkm',
+  payroll:'tblCXkQ5ZXM70RBq3', leads:'tblh3Brus29eJC8NZ',
+  objections:'tblC5dhcUfidpOIb8', tasks:'tblgV2zPFNioMkqVi'
+};
+
+async function atFetch(tableId) {
+  let records=[], offset=null;
+  do {
+    const url = `https://api.airtable.com/v0/${BASE_ID}/${tableId}?${offset?'offset='+offset:''}`;
+    const d = await (await fetch(url,{headers:{Authorization:`Bearer ${API_KEY}`}})).json();
+    records = records.concat(d.records||[]);
+    offset = d.offset||null;
+  } while(offset);
+  return records;
+}
+async function atCreate(tableId, fields) {
+  const r = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${tableId}`,{method:'POST',headers:{Authorization:`Bearer ${API_KEY}`,'Content-Type':'application/json'},body:JSON.stringify({fields, typecast:true})});
+  return r.json();
+}
+async function atUpdate(tableId, id, fields) {
+  const r = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${tableId}/${id}`,{method:'PATCH',headers:{Authorization:`Bearer ${API_KEY}`,'Content-Type':'application/json'},body:JSON.stringify({fields, typecast:true})});
+  return r.json();
+}
+async function atDelete(tableId, id) {
+  await fetch(`https://api.airtable.com/v0/${BASE_ID}/${tableId}/${id}`,{method:'DELETE',headers:{Authorization:`Bearer ${API_KEY}`}});
+}
+
+// =====================
+// HELPERS
+// =====================
+function cacheRecs(key, recs) {
+  recCache[key] = {};
+  if(Array.isArray(recs)) recs.forEach(r => { recCache[key][r.id] = r.fields; });
+}
+function b(txt,cls){ return `<span class="badge ${cls}">${txt||'—'}</span>`; }
+function stageBadge(s){ return b(s,{Signed:'bg',Quoted:'bb',Negotiating:'ba',New:'bgy',Lost:'br',Contacted:'bp'}[s]||'bgy'); }
+function statusBadge(s){ return b(s,{Active:'bg','On Leave':'ba',Absent:'br',Present:'bg',Late:'ba',Paid:'bg',Pending:'ba',Open:'br','In Progress':'ba',Resolved:'bg',Done:'bg','Not Started':'bgy',Overdue:'br',Approved:'bb',Rejected:'br','Leave Applied':'ba','Leave Approved':'bg','Leave Rejected':'br'}[s]||'bgy'); }
+function deptBadge(d){ return b(d,{Sales:'bb',HR:'bp',Management:'bg',Objections:'ba',Operations:'bgy',Admin:'bn'}[d]||'bgy'); }
+function priBadge(p){ return b(p,{High:'br',Medium:'ba',Low:'bgy'}[p]||'bgy'); }
+function fuelBadge(f){ if(!f) return b('—','bgy'); if(f==='Elect, Gas & Water') return b(f,'ba'); if(f.includes('Elect')&&f.includes('Gas')) return b(f,'ba'); if(f==='Electricity Only') return b(f,'bb'); if(f==='Gas Only') return b(f,'bp'); if(f==='Water Only') return b(f,'bb'); return b(f,'bgy'); }
+function escHtml(t){ return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function showToast(msg){ const t=document.getElementById('toast'); if(!t) return; t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3500); }
+function filterTable(id,q){ const el=document.getElementById(id); if(!el) return; el.querySelectorAll('tbody tr').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q.toLowerCase())?'':'none'}); }
+function nowDateTime(){ 
+  const n=new Date();
+  const d=String(n.getDate()).padStart(2,'0');
+  const m=String(n.getMonth()+1).padStart(2,'0');
+  const y=n.getFullYear();
+  const h=String(n.getHours()).padStart(2,'0');
+  const mi=String(n.getMinutes()).padStart(2,'0');
+  const s=String(n.getSeconds()).padStart(2,'0');
+  return `${d}/${m}/${y} ${h}:${mi}:${s}`;
+}
+
+function getAttendanceStatus() {
+  // Office: 3:00 PM PKT (UTC+5). Grace period ends 3:15 PM PKT
+  const now = new Date();
+  const pktTotalMins = ((now.getUTCHours() + 5) % 24) * 60 + now.getUTCMinutes();
+  const officeStart = 15 * 60;   // 3:00 PM = 900 mins
+  const graceEnd   = 15 * 60 + 15; // 3:15 PM = 915 mins
+  if(pktTotalMins > graceEnd) return 'Late';
+  return 'Present';
+}
+function strColor(s){ const cols=['#1a3a6b','#1D9E75','#7c3aed','#db2777','#d97706','#0891b2','#dc2626','#065f46']; let h=0; for(let c of s) h=(h*31+c.charCodeAt(0))%cols.length; return cols[Math.abs(h)%cols.length]; }
+function timeAgo(ts){ if(!ts) return ''; const d=Date.now()-ts; if(d<60000) return 'Just now'; if(d<3600000) return Math.floor(d/60000)+'m ago'; if(d<86400000) return Math.floor(d/3600000)+'h ago'; return Math.floor(d/86400000)+'d ago'; }
+function roleLabel(r){ return {admin:'Super Admin',hr:'HR Manager',manager:'Manager',sales:'Sales Agent',objections:'Objections Team',employee:'Employee'}[r]||r; }
+
+// Edit helpers
+function editBtn(key,id){ return `<button class="btn" style="padding:2px 5px" title="Edit" onclick="editRecById('${key}','${id}')"><i class="ti ti-edit" style="color:var(--navy);font-size:13px"></i></button>`; }
+function delBtn(key,id){ return `<button class="btn" style="padding:2px 5px" title="Delete" onclick="deleteRec('${key}','${id}')"><i class="ti ti-trash" style="color:#dc2626;font-size:13px"></i></button>`; }
+function actionBtns(key,id){ return `<td style="display:flex;gap:3px">${editBtn(key,id)}${delBtn(key,id)}</td>`; }
+
+// =====================
+// AUTH
+// =====================
+async function doLogin() {
+  const email = (document.getElementById('login-email').value||'').trim().toLowerCase();
+  const pass = (document.getElementById('login-pass').value||'').trim();
+  const errEl = document.getElementById('login-err');
+  const btn = document.querySelector('.login-btn');
+  errEl.style.display = 'none';
+  if(!email||!pass){ errEl.textContent='Please enter your email and password.'; errEl.style.display='block'; return; }
+  btn.textContent='Signing in...'; btn.disabled=true;
+  try {
+    // Try Firebase first, then localStorage, then hardcoded defaults
+    let users = [];
+    try { users = await getUsers(); } catch(e) { users = []; }
+    // Always include defaults as emergency fallback
+    const defaults = [
+      {email:'admin@rbs.co.uk', password:'Admin@RBS2026', name:'Admin', role:'admin', dept:'Admin', active:true},
+      {email:'hr@rbs.co.uk', password:'HR@RBS2026', name:'HR Manager', role:'hr', dept:'HR', active:true}
+    ];
+    // Merge — defaults fill in if not already in users list
+    defaults.forEach(d => { if(!users.find(u=>(u.email||'').toLowerCase()===d.email)) users.push(d); });
+
+    // Also try localStorage directly
+    try {
+      const lsUsers = JSON.parse(localStorage.getItem('rbs_users')||'[]');
+      lsUsers.forEach(u => { if(u.email && !users.find(x=>(x.email||'').toLowerCase()===(u.email||'').toLowerCase())) users.push(u); });
+    } catch(e) {}
+
+    const user = users.find(u => (u.email||'').toLowerCase()===email && u.password===pass && u.active!==false);
+    if(!user){
+      // Extra check — maybe active field is missing (treat missing as active)
+      const user2 = users.find(u => (u.email||'').toLowerCase()===email && u.password===pass);
+      if(user2 && user2.active===undefined) {
+        currentUser = user2;
+        sessionStorage.setItem('rbs_session', JSON.stringify(user2));
+        btn.textContent='Sign in'; btn.disabled=false;
+        showPortal();
+        return;
+      }
+      errEl.textContent='❌ Incorrect email or password. Contact Admin or HR to reset.';
+      errEl.style.display='block';
+      btn.textContent='Sign in'; btn.disabled=false;
+      return;
+    }
+    currentUser = user;
+    sessionStorage.setItem('rbs_session', JSON.stringify(user));
+    btn.textContent='Sign in'; btn.disabled=false;
+    showPortal();
+  } catch(e) {
+    // Ultimate fallback — try hardcoded defaults only
+    const defaults2 = [
+      {email:'admin@rbs.co.uk', password:'Admin@RBS2026', name:'Admin', role:'admin', dept:'Admin', active:true},
+      {email:'hr@rbs.co.uk', password:'HR@RBS2026', name:'HR Manager', role:'hr', dept:'HR', active:true}
+    ];
+    const fallback = defaults2.find(u => u.email===email && u.password===pass);
+    if(fallback) {
+      currentUser=fallback;
+      sessionStorage.setItem('rbs_session', JSON.stringify(fallback));
+      btn.textContent='Sign in'; btn.disabled=false;
+      showPortal();
+    } else {
+      errEl.textContent='Login error: '+e.message+'. Try again or check your internet connection.';
+      errEl.style.display='block';
+      btn.textContent='Sign in'; btn.disabled=false;
+    }
+  }
+}
+
+function doLogout() {
+  currentUser=null; _usersCache=null;
+  sessionStorage.removeItem('rbs_session');
+  allData={};
+  document.getElementById('shell').classList.remove('show');
+  document.getElementById('login-page').style.display='flex';
+  document.getElementById('login-email').value='';
+  document.getElementById('login-pass').value='';
+}
+
+function showPortal() {
+  document.getElementById('login-page').style.display='none';
+  document.getElementById('shell').classList.add('show');
+  const ini=(currentUser.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('user-av').textContent=ini;
+  document.getElementById('user-chip-name').textContent=currentUser.name||'';
+  document.getElementById('user-chip-role').textContent=roleLabel(currentUser.role);
+  buildNav();
+  setTimeout(()=>{ requestNotifPermission(); initNotifications(); buildChatTabs(); }, 1500);
+}
+
+// =====================
+// NAV
+// =====================
+function buildNav() {
+  const r = currentUser.role;
+  let nav = [];
+  if(r==='admin'||r==='hr') {
+    nav = [
+      {g:'Overview', items:[{id:'dashboard',icon:'ti-layout-dashboard',label:'Dashboard'}]},
+      {g:'HR', items:[
+        {id:'employees',icon:'ti-users',label:'Employees'},
+        {id:'attendance',icon:'ti-calendar',label:'All Attendance'},
+        {id:'leave',icon:'ti-beach',label:'Leave Requests'},
+        {id:'payroll',icon:'ti-cash',label:'Payroll'},
+        {id:'users',icon:'ti-lock',label:'Manage Logins'}
+      ]},
+      {g:'Operations', items:[{id:'leads',icon:'ti-target',label:'All Leads'},{id:'customers',icon:'ti-bolt',label:'All Customers'},{id:'objections',icon:'ti-shield-check',label:'Objections'},{id:'tasks',icon:'ti-checklist',label:'All Tasks'}]},
+      {g:'Comms', items:[{id:'chat',icon:'ti-message-circle',label:'Team Chat'}]}
+    ];
+  } else if(r==='manager') {
+    nav = [
+      {g:'Overview', items:[{id:'dashboard',icon:'ti-layout-dashboard',label:'Dashboard'}]},
+      {g:'Operations', items:[{id:'leads',icon:'ti-target',label:'All Leads'},{id:'customers',icon:'ti-bolt',label:'All Customers'},{id:'tasks',icon:'ti-checklist',label:'All Tasks'},{id:'objections',icon:'ti-shield-check',label:'Objections'}]},
+      {g:'Team', items:[{id:'employees',icon:'ti-users',label:'Team'},{id:'attendance',icon:'ti-calendar',label:'Attendance'},{id:'leave',icon:'ti-beach',label:'Leave Requests'},{id:'payroll',icon:'ti-cash',label:'Payroll'}]},
+      {g:'Comms', items:[{id:'chat',icon:'ti-message-circle',label:'Team Chat'}]}
+    ];
+  } else if(r==='sales') {
+    nav = [
+      {g:'My Work', items:[{id:'dashboard',icon:'ti-layout-dashboard',label:'Dashboard'},{id:'leads',icon:'ti-bolt',label:'My Leads'},{id:'customers',icon:'ti-users',label:'My Customers'},{id:'tasks',icon:'ti-checklist',label:'My Tasks'}]},
+      {g:'Me', items:[{id:'attendance',icon:'ti-calendar',label:'My Attendance'},{id:'leave',icon:'ti-beach',label:'My Leave'},{id:'payroll',icon:'ti-cash',label:'My Payslip'}]},
+      {g:'Comms', items:[{id:'chat',icon:'ti-message-circle',label:'Team Chat'}]}
+    ];
+  } else if(r==='objections') {
+    nav = [
+      {g:'My Work', items:[{id:'dashboard',icon:'ti-layout-dashboard',label:'Dashboard'},{id:'objections',icon:'ti-shield-check',label:'My Queue'},{id:'tasks',icon:'ti-checklist',label:'My Tasks'}]},
+      {g:'Me', items:[{id:'attendance',icon:'ti-calendar',label:'My Attendance'},{id:'leave',icon:'ti-beach',label:'My Leave'},{id:'payroll',icon:'ti-cash',label:'My Payslip'}]},
+      {g:'Comms', items:[{id:'chat',icon:'ti-message-circle',label:'Team Chat'}]}
+    ];
+  } else {
+    nav = [
+      {g:'My Work', items:[{id:'dashboard',icon:'ti-layout-dashboard',label:'Dashboard'},{id:'leads',icon:'ti-bolt',label:'My Leads'},{id:'tasks',icon:'ti-checklist',label:'My Tasks'}]},
+      {g:'Me', items:[{id:'attendance',icon:'ti-calendar',label:'My Attendance'},{id:'leave',icon:'ti-beach',label:'My Leave'},{id:'payroll',icon:'ti-cash',label:'My Payslip'}]},
+      {g:'Comms', items:[{id:'chat',icon:'ti-message-circle',label:'Team Chat'}]}
+    ];
+  }
+  const navEl = document.getElementById('nav-area');
+  navEl.innerHTML = nav.map(g =>
+    `<div class="ng">${g.g}</div>`+
+    g.items.map(it=>`<div class="ni" onclick="goSec('${it.id}',this)"><i class="ti ${it.icon}"></i>${it.label}</div>`).join('')
+  ).join('');
+  goSec(nav[0].items[0].id, navEl.querySelector('.ni'));
+}
+
+function goSec(id, el) {
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  const sec=document.getElementById('s-'+id); if(sec) sec.classList.add('on');
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  const isHR = currentUser && ['admin','hr','manager'].includes(currentUser.role);
+  const titles={dashboard:'Dashboard',leads:'My Leads',customers:isHR?'All Customers':'My Customers',
+    tasks:isHR?'All Tasks':'My Tasks',attendance:isHR?'All Attendance':'My Attendance',
+    leave:isHR?'Leave Requests':'My Leave',payroll:isHR?'Payroll':'My Payslip',
+    objections:'Objections',employees:'Employees',users:'Manage Logins',chat:'Team Chat'};
+  document.getElementById('pg-title').textContent=titles[id]||id;
+  document.getElementById('pg-sub').textContent='Royal Business Solutions — '+roleLabel(currentUser.role);
+  currentSection=id;
+  // Global add btn — not shown on leave (has its own button)
+  // Payroll add only for admin/hr; employees never see payroll add
+  const addBtn=document.getElementById('add-btn');
+  const isAdminHR=['admin','hr'].includes(currentUser.role);
+  const addableSections=['leads','customers','tasks','attendance','objections','employees','users'];
+  if(id==='payroll') {
+    if(addBtn) addBtn.style.display = isAdminHR?'':'none';
+  } else {
+    if(addBtn) addBtn.style.display=addableSections.includes(id)?'':'none';
+  }
+  // Leave section specific
+  const leaveApplyBtn=document.getElementById('leave-apply-btn');
+  if(id==='leave' && leaveApplyBtn) leaveApplyBtn.style.display=isHR?'none':'';
+  loadSection(id);
+}
+
+function loadSection(id) {
+  const loaders={dashboard:loadDashboard,leads:loadLeads,customers:loadCustomers,tasks:loadTasks,
+    attendance:loadAttendance,leave:loadLeave,payroll:loadPayroll,objections:loadObjections,
+    employees:loadEmployees,users:loadUsers};
+  if(loaders[id]) loaders[id]();
+}
+
+function refreshAll(){ allData={}; recCache={}; loadSection(currentSection); showToast('🔄 Refreshed'); }
+
+// =====================
+// LOADERS
+// =====================
+
+// Live search helper — filters rows in any table by id
+function liveSearch(tableId, q) {
+  const el = document.getElementById(tableId); if(!el) return;
+  const term = q.trim().toLowerCase();
+  el.querySelectorAll('tbody tr').forEach(row => {
+    row.style.display = !term || row.textContent.toLowerCase().includes(term) ? '' : 'none';
+  });
+}
+
+async function loadDashboard() {
+  const isAdmin=['admin','hr','manager'].includes(currentUser.role);
+  // Employees only need their own data — don't fetch all employees for them
+  const fetches=[atFetch(TABLES.leads),atFetch(TABLES.tasks),atFetch(TABLES.attendance)];
+  if(isAdmin) fetches.push(atFetch(TABLES.employees));
+  const results = await Promise.all(fetches);
+  const [leads,tasks,att] = results;
+  const emps = isAdmin ? results[3] : [];
+  allData.leads=leads; allData.tasks=tasks; allData.attendance=att;
+  if(isAdmin){ allData.employees=emps; cacheRecs('employees',emps); }
+  cacheRecs('leads',leads); cacheRecs('tasks',tasks); cacheRecs('attendance',att);
+
+  const _myName=(currentUser.name||'').trim();
+  const myLeads=isAdmin?leads:leads.filter(r=>(r.fields['Assigned To']||'').trim()===_myName||(r.fields['Lead Created By']||'').trim()===_myName);
+  const myTasks=isAdmin?tasks:tasks.filter(r=>r.fields['Assigned To']===currentUser.name);
+  const myAtt=att.filter(r=>r.fields['Employee Name']===currentUser.name);
+
+  document.getElementById('d-leads').textContent=myLeads.length;
+  document.getElementById('d-tasks').textContent=myTasks.filter(r=>r.fields.Status==='In Progress').length;
+  document.getElementById('d-att').textContent=myAtt.filter(r=>r.fields.Status==='Present').length+' days';
+
+  // Team size & today's attendance — management only
+  const teamCard=document.getElementById('d-team-card');
+  const attTodayCard=document.getElementById('d-att-today-card');
+  if(isAdmin){
+    if(teamCard) teamCard.style.display='';
+    document.getElementById('d-team').textContent=emps.length;
+    // Today's attendance
+    const today=new Date();
+    const dd=String(today.getDate()).padStart(2,'0');
+    const mm=String(today.getMonth()+1).padStart(2,'0');
+    const yyyy=today.getFullYear();
+    const todayStr=dd+'/'+mm+'/'+yyyy;
+    const todayAtt=att.filter(r=>(['Present','Late'].includes(r.fields['Status']))&&(r.fields['Date']||'').startsWith(todayStr));
+    const uniqueToday=[...new Set(todayAtt.map(r=>r.fields['Employee Name']))];
+    if(attTodayCard){
+      attTodayCard.style.display='';
+      document.getElementById('d-att-today').textContent=uniqueToday.length+'/'+emps.length;
+    }
+  } else {
+    if(teamCard) teamCard.style.display='none';
+    if(attTodayCard) attTodayCard.style.display='none';
+  }
+
+  document.getElementById('dash-leads').innerHTML=myLeads.length===0?'<div class="empty">No leads yet</div>'
+    :`<table><thead><tr><th>Name</th><th>Fuel</th><th>Stage</th></tr></thead><tbody>${myLeads.slice(0,5).map(r=>`<tr><td style="font-weight:500">${escHtml(r.fields['Lead Name'])}</td><td>${fuelBadge(r.fields['Fuel Type'])}</td><td>${stageBadge(r.fields['Stage'])}</td></tr>`).join('')}</tbody></table>`;
+  document.getElementById('dash-tasks').innerHTML=myTasks.length===0?'<div class="empty">No tasks</div>'
+    :`<table><thead><tr><th>Task</th><th>Priority</th><th>Status</th></tr></thead><tbody>${myTasks.slice(0,5).map(r=>`<tr><td style="font-weight:500">${escHtml(r.fields['Task'])}</td><td>${priBadge(r.fields['Priority'])}</td><td>${statusBadge(r.fields['Status'])}</td></tr>`).join('')}</tbody></table>`;
+}
+
+async function loadLeads() {
+  const isAdmin=['admin','hr','manager'].includes(currentUser.role);
+  const recs=await atFetch(TABLES.leads); allData.leads=recs; cacheRecs('leads',recs);
+  const myName2 = (currentUser.name||'').trim();
+  const allMine=isAdmin?recs:recs.filter(r=>{
+    const assignedTo=(r.fields['Assigned To']||'').trim();
+    const createdBy=(r.fields['Lead Created By']||'').trim();
+    return assignedTo===myName2 || createdBy===myName2;
+  });
+  const mine=allMine.filter(r=>r.fields['Stage']!=='Signed');
+  document.getElementById('ml-total').textContent=mine.length;
+  document.getElementById('ml-signed').textContent=mine.filter(r=>r.fields.Stage==='Signed').length;
+  document.getElementById('ml-pipe').textContent=mine.filter(r=>['Quoted','Negotiating','Contacted','New'].includes(r.fields.Stage)).length;
+  document.getElementById('ml-lost').textContent=mine.filter(r=>r.fields.Stage==='Lost').length;
+  document.getElementById('lead-table').innerHTML=mine.length===0?'<div class="empty">No leads yet.</div>'
+    :`<div style="margin-bottom:10px"><div style="position:relative"><i class="ti ti-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--tm);font-size:14px"></i><input type="text" placeholder="Search..." oninput="liveSearch('leads-tbody',this.value)" style="width:100%;font-size:13px;padding:7px 10px 7px 34px;border:0.5px solid var(--bstrong);border-radius:var(--r);background:var(--s2);color:var(--tp)"></div></div>`+
+    `<table><thead><tr><th style="width:20%">Name</th><th style="width:16%">Business</th><th style="width:10%">Type</th><th style="width:10%">Fuel</th><th style="width:9%">Stage</th><th style="width:11%">Lead Date</th><th style="width:10%">Assigned</th><th style="width:9%">By</th><th style="width:12%"></th></tr></thead><tbody id="leads-tbody">
+    ${mine.map(r=>`<tr><td style="font-weight:500">${escHtml(r.fields['Lead Name'])}</td><td style="font-size:11px">${escHtml(r.fields['Business Name']||'—')}</td><td>${r.fields['Account Type']==='Commercial'?b('Commercial','bb'):b('Domestic','bgy')}</td><td>${fuelBadge(r.fields['Fuel Type'])}</td><td>${stageBadge(r.fields['Stage'])}</td><td style="font-size:11px">${r.fields['Lead Date']||'—'}</td><td style="font-size:11px">${escHtml(r.fields['Assigned To'])}</td><td style="font-size:11px">${escHtml(r.fields['Lead Created By']||'—')}</td>${actionBtns('leads',r.id)}</tr>`).join('')}
+    </tbody></table>`;
+}
+
+async function loadCustomers() {
+  const isAdmin=['admin','hr','manager'].includes(currentUser.role);
+  const recs=await atFetch(TABLES.leads); allData.leads=recs; cacheRecs('leads',recs);
+  // Strictly filter — employee only sees their OWN customers
+  const owned=isAdmin?recs:recs.filter(r=>{
+  const visible=isAdmin?recs:recs.filter(r=>{
+    const a=(r.fields['Assigned To']||'').trim().toLowerCase();
+    const cb=(r.fields['Lead Created By']||'').trim().toLowerCase();
+  });
+  const visible=owned.filter(r=>r.fields['Stage']==='Signed');
+  });
+  // Use visible (not recs) for EVERYTHING below
+  document.getElementById('cust-table').innerHTML=visible.length===0
+    ?`<div class="empty" style="padding:2rem;text-align:center">
+        <i class="ti ti-users-off" style="font-size:36px;display:block;margin-bottom:10px;color:var(--navy-light)"></i>
+        ${isAdmin?'No customers yet.':'No signed customers yet. When a lead stage is Signed it appears here.'}
+      </div>`
+    :`<div style="margin-bottom:10px"><div style="position:relative"><i class="ti ti-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--tm);font-size:14px"></i><input type="text" placeholder="Search..." oninput="liveSearch('cust-tbody',this.value)" style="width:100%;font-size:13px;padding:7px 10px 7px 34px;border:0.5px solid var(--bstrong);border-radius:var(--r);background:var(--s2);color:var(--tp)"></div></div>`+
+    `<table><thead><tr>
+      <th style="width:18%">Name</th>
+      <th style="width:14%">Business Name</th>
+      <th style="width:10%">Type</th>
+      <th style="width:10%">Fuel</th>
+      <th style="width:10%">Stage</th>
+      <th style="width:12%">Created By</th>
+      <th style="width:9%">£/mo</th>
+      <th style="width:17%"></th>
+    </tr></thead><tbody id="cust-tbody">
+    ${visible.map(r=>`<tr style="cursor:pointer" onclick="showCustomerDetail('${r.id}')">
+      <td style="font-weight:500">${escHtml(r.fields['Lead Name'])}</td>
+      <td style="font-size:12px">${escHtml(r.fields['Business Name']||'—')}</td>
+      <td>${r.fields['Account Type']==='Commercial'?b('Commercial','bb'):b('Domestic','bgy')}</td>
+      <td>${fuelBadge(r.fields['Fuel Type'])}</td>
+      <td>${stageBadge(r.fields['Stage'])}</td>
+      <td style="font-size:11px">${escHtml(r.fields['Lead Created By']||r.fields['Assigned To']||'—')}</td>
+      <td style="font-size:11px">${r.fields['Monthly Value']?'£'+parseFloat(r.fields['Monthly Value']).toLocaleString():'—'}</td>
+      <td onclick="event.stopPropagation()" style="display:flex;gap:3px">${editBtn('leads',r.id)}${delBtn('leads',r.id)}</td>
+    </tr>`).join('')}</tbody></table>
+    <div style="font-size:11.5px;color:var(--tm);padding:.5rem 0">👆 Click any row to see full details</div>`;
+}
+
+function showCustomerDetail(id) {
+  const f=(recCache['leads']||{})[id]; if(!f) return;
+  const mv=f['Monthly Value']?'£'+parseFloat(f['Monthly Value']).toLocaleString()+'/mo':'—';
+  document.getElementById('modal-title').textContent=escHtml(f['Lead Name'])||'Customer Details';
+  document.getElementById('modal-save-btn').style.display='none';
+  document.getElementById('modal-body').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+      <div class="field"><label>Name</label><div style="font-size:13px;font-weight:500">${escHtml(f['Lead Name'])}</div></div>
+      <div class="field"><label>Account type</label>${f['Account Type']==='Commercial'?b('Commercial','bb'):b('Domestic','bgy')}</div>
+      <div class="field"><label>Address</label><div style="font-size:13px">${escHtml(f['Address'])}</div></div>
+      <div class="field"><label>Phone</label><div style="font-size:13px">${escHtml(f['Phone'])}</div></div>
+      <div class="field"><label>Email</label><div style="font-size:13px">${escHtml(f['Email'])}</div></div>
+      <div class="field"><label>Fuel type</label>${fuelBadge(f['Fuel Type'])}</div>
+      <div class="field"><label>Stage</label>${stageBadge(f['Stage'])}</div>
+      <div class="field"><label>Monthly value</label><div style="font-size:13px;font-weight:500">${mv}</div></div>
+      <div class="field"><label>Assigned to</label><div style="font-size:13px">${escHtml(f['Assigned To'])}</div></div>
+      <div class="field"><label>Business Name</label><div style="font-size:13px">${escHtml(f['Business Name']||'—')}</div></div>
+      <div class="field"><label>Lead Created By</label><div style="font-size:13px">${escHtml(f['Lead Created By']||'—')}</div></div>
+    </div>
+    ${f['Notes']?`<div class="field"><label>Notes</label><div style="font-size:13px;background:var(--s0);padding:10px;border-radius:var(--r);border:0.5px solid var(--border);white-space:pre-wrap">${escHtml(f['Notes'])}</div></div>`:''}
+    <div style="margin-top:12px;display:flex;gap:8px">${editBtn('leads',id)}${delBtn('leads',id)}</div>`;
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+async function loadTasks() {
+  const isAdmin=['admin','hr','manager'].includes(currentUser.role);
+  const recs=await atFetch(TABLES.tasks); allData.tasks=recs; cacheRecs('tasks',recs);
+  const myNameT=(currentUser.name||'').trim();
+  const mine=isAdmin?recs:recs.filter(r=>(r.fields['Assigned To']||'').trim()===myNameT);
+  document.getElementById('tasks-label').textContent=isAdmin?`All tasks (${mine.length})`:`My tasks (${mine.length})`;
+  const tasksDlBtn=document.getElementById('tasks-dl-btn'); if(tasksDlBtn) tasksDlBtn.style.display='';
+  document.getElementById('task-table').innerHTML=mine.length===0?'<div class="empty">No tasks yet.</div>'
+    :`<div style="margin-bottom:10px"><div style="position:relative"><i class="ti ti-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--tm);font-size:14px"></i><input type="text" placeholder="Search..." oninput="liveSearch('tasks-tbody',this.value)" style="width:100%;font-size:13px;padding:7px 10px 7px 34px;border:0.5px solid var(--bstrong);border-radius:var(--r);background:var(--s2);color:var(--tp)"></div></div>`+
+    `<table><thead><tr><th style="width:24%">Task</th><th style="width:13%">Assigned To</th><th style="width:12%">Assigned By</th><th style="width:10%">Team</th><th style="width:10%">Due</th><th style="width:9%">Priority</th><th style="width:10%">Status</th><th style="width:12%"></th></tr></thead><tbody id="tasks-tbody">
+    ${mine.map(r=>`<tr><td style="font-weight:500">${escHtml(r.fields['Task'])}</td><td>${escHtml(r.fields['Assigned To'])}</td><td style="font-size:11px;color:var(--ts)">${escHtml(r.fields['Assigned By']||'—')}</td><td>${deptBadge(r.fields['Team'])}</td><td style="font-size:11px">${r.fields['Due Date']||'—'}</td><td>${priBadge(r.fields['Priority'])}</td><td>${statusBadge(r.fields['Status'])}</td>${actionBtns('tasks',r.id)}</tr>`).join('')}
+    </tbody></table>`;
+}
+
+async function loadAttendance() {
+  const isAdmin=['admin','hr','manager'].includes(currentUser.role);
+  const recs=await atFetch(TABLES.attendance); allData.attendance=recs; cacheRecs('attendance',recs);
+  const attRecs=recs.filter(r=>!['Leave Applied','Leave Rejected'].includes(r.fields['Status']));
+  attRecs.forEach(r=>{ if(r.fields['Status']==='Leave Approved') r._displayStatus='On Leave'; });
+
+  // Build today string in dd/mm/yyyy format to match stored dates
+  const now=new Date();
+  const dd=String(now.getDate()).padStart(2,'0');
+  const mm=String(now.getMonth()+1).padStart(2,'0');
+  const yyyy=now.getFullYear();
+  const todayStr=`${dd}/${mm}/${yyyy}`; // e.g. 13/07/2026
+
+  // Helper: parse stored date - handles ALL formats:
+  // "dd/mm/yyyy hh:mm:ss", "dd/mm/yyyy, hh:mm:ss", "yyyy-mm-dd", "2026-07-13T15:04:32"
+  function parseAttDate(raw) {
+    if(!raw) return {date:'',time:'',timeFull:'',display:'—'};
+    raw = String(raw).trim().replace(',','');
+    let datePart='', timePart='';
+    
+    // ISO format: "2026-07-13" or "2026-07-13T15:04:32" or "2026-07-13 15:04:32"
+    if(/^\d{4}-\d{2}-\d{2}/.test(raw)) {
+      const isoClean = raw.replace('T',' ');
+      const parts = isoClean.split(' ');
+      const iso = parts[0]; // "2026-07-13"
+      const isoParts = iso.split('-');
+      // Convert to dd/mm/yyyy
+      datePart = isoParts[2]+'/'+isoParts[1]+'/'+isoParts[0];
+      timePart = (parts[1]||'').substring(0,8);
+    }
+    // dd/mm/yyyy format: "13/07/2026 15:04:32"
+    else if(/^\d{2}\/\d{2}\/\d{4}/.test(raw)) {
+      const parts = raw.split(' ');
+      datePart = parts[0]; // dd/mm/yyyy
+      timePart = (parts[1]||'').substring(0,8);
+    }
+    // Fallback
+    else {
+      datePart = raw.substring(0,10);
+      timePart = raw.length>10 ? raw.substring(11,19) : '';
+    }
+    
+    return {
+      date: datePart,        // always dd/mm/yyyy
+      time: timePart.substring(0,5),   // hh:mm
+      timeFull: timePart,    // hh:mm:ss
+      display: datePart + (timePart?' '+timePart.substring(0,5):'')
+    };
+  }
+
+  if(isAdmin) {
+    // Filter today's records
+    // Get time from 'Time Marked' field if available, fallback to parsing Date field
+    attRecs.forEach(r=>{
+      if(!r._timeMarked) {
+        const tm = r.fields['Time Marked']||'';
+        const {time,timeFull} = parseAttDate(r.fields['Date']);
+        r._timeMarked = tm || timeFull || time || '';
+      }
+    });
+    const todayRecs=attRecs.filter(r=>{
+      const {date}=parseAttDate(r.fields['Date']);
+      return date===todayStr;
+    });
+
+    // Build calendar: group by employee and date
+    const empDates={};
+    attRecs.forEach(r=>{
+      const emp=(r.fields['Employee Name']||'?').trim();
+      const {date,time}=parseAttDate(r.fields['Date']);
+      if(!date) return;
+      if(!empDates[emp]) empDates[emp]={};
+      const displayTime2=r.fields['Time Marked']||time||'';
+      if(!empDates[emp][date]) empDates[emp][date]={status:r._displayStatus||r.fields['Status'],time:displayTime2};
+    });
+    const empNames=Object.keys(empDates).sort();
+    // Unique dates sorted newest first — show last 30 days
+    const allDates=[...new Set(attRecs.map(r=>parseAttDate(r.fields['Date']).date))].filter(d=>d&&d!==todayStr).sort((a,b)=>{
+      // Sort dd/mm/yyyy descending
+      const [da,ma,ya]=a.split('/'); const [db,mb,yb]=b.split('/');
+      return new Date(yb,mb-1,db)-new Date(ya,ma-1,da);
+    }).slice(0,30);
+
+    document.getElementById('att-label').textContent=`Today's attendance — ${todayRecs.length} marked`;
+    document.getElementById('att-table').innerHTML=
+
+      // ── TODAY ──
+      `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+        <div style="font-size:13.5px;font-weight:600;color:var(--tp)">📅 Today — ${todayStr}</div>
+        <button class="btn" onclick="downloadAttReport('today')" style="font-size:11.5px"><i class="ti ti-download"></i> Download Today</button>
+      </div>`+
+      (todayRecs.length===0
+        ?`<div style="background:var(--s0);border:0.5px solid var(--border);border-radius:10px;padding:1.25rem;text-align:center;margin-bottom:16px;color:var(--tm)">
+            <i class="ti ti-clock" style="font-size:32px;display:block;margin-bottom:8px;color:#a0b8de"></i>
+            No attendance marked today yet (${todayStr})
+          </div>`
+        :`<div style="margin-bottom:8px"><input type="text" placeholder="Search employee..." oninput="liveSearch('att-today-tbody',this.value)" style="width:100%;font-size:13px;padding:7px 12px;border:0.5px solid var(--bstrong);border-radius:var(--r);background:var(--s2);color:var(--tp)"></div>
+         <div style="overflow-x:auto;margin-bottom:16px">
+         <table><thead><tr>
+           <th style="width:25%">Employee Name</th>
+           <th style="width:15%">Date</th>
+           <th style="width:15%">⏰ Time</th>
+           <th style="width:15%">Status</th>
+           <th style="width:22%">Notes</th>
+           <th style="width:8%">Edit</th>
+         </tr></thead><tbody id="att-today-tbody">
+         ${todayRecs.map(r=>{
+           const {date}=parseAttDate(r.fields['Date']);
+           const displayTime=r.fields['Time Marked']||r._timeMarked||'—';
+           return `<tr>
+             <td style="font-weight:500">${escHtml(r.fields['Employee Name'])}</td>
+             <td style="font-size:12px">${date||r.fields['Date']||'—'}</td>
+             <td style="font-size:12px;font-family:monospace;color:var(--navy);font-weight:600">${displayTime}</td>
+             <td>${statusBadge(r._displayStatus||r.fields['Status'])}</td>
+             <td style="font-size:11px;color:var(--tm)">${escHtml(r.fields['Notes'])}</td>
+             <td style="display:flex;gap:3px">${editBtn('attendance',r.id)}${delBtn('attendance',r.id)}</td>
+           </tr>`;
+         }).join('')}
+         </tbody></table></div>`)+
+
+      // ── HISTORY CALENDAR ──
+      `<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0 10px;flex-wrap:wrap;gap:8px">
+        <div style="font-size:13.5px;font-weight:600;color:var(--tp)">📊 Previous attendance history</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input type="date" id="att-date-filter" onchange="filterAttCalendar(this.value)" style="font-size:12px;padding:5px 8px;border:0.5px solid var(--bstrong);border-radius:var(--r);background:var(--s2);color:var(--tp)">
+          <button class="btn" onclick="filterAttCalendar('')" style="font-size:11.5px">Show all</button>
+          <button class="btn" onclick="downloadAttReport('all')" style="font-size:11.5px"><i class="ti ti-download"></i> Full report</button>
+        </div>
+      </div>
+      <div id="att-calendar-wrap">${buildAttCalendar(empNames,allDates,empDates)}</div>`;
+
+  } else {
+    // ── EMPLOYEE VIEW ──
+    const myName=(currentUser.name||'').trim().toLowerCase();
+    const mine=attRecs.filter(r=>(r.fields['Employee Name']||'').trim().toLowerCase()===myName);
+    const todayMine=mine.filter(r=>{
+      const {date}=parseAttDate(r.fields['Date']);
+      return date===todayStr;
+    });
+    const alreadyMarked=todayMine.length>0;
+    let todayStatus='', todayTime='';
+    if(alreadyMarked){
+      todayStatus=todayMine[0]._displayStatus||todayMine[0].fields['Status'];
+      todayTime=todayMine[0].fields['Time Marked']||parseAttDate(todayMine[0].fields['Date']).timeFull||'—';
+    }
+    document.getElementById('att-label').textContent=`My attendance (${mine.length} records)`;
+    document.getElementById('att-table').innerHTML=
+      // Today status banner
+      `<div style="background:${alreadyMarked?'#EAF3DE':'#FAEEDA'};border:0.5px solid ${alreadyMarked?'#a3d07a':'#f0c040'};border-radius:10px;padding:.85rem 1rem;margin-bottom:12px;display:flex;align-items:center;gap:10px">
+        <i class="ti ${alreadyMarked?'ti-circle-check':'ti-alert-circle'}" style="font-size:24px;color:${alreadyMarked?'#27500A':'#633806'};flex-shrink:0"></i>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:${alreadyMarked?'#27500A':'#633806'}">
+            ${alreadyMarked?'✅ Attendance marked today ('+todayStr+')':'⚠️ Not marked today ('+todayStr+') — click "Mark attendance" above'}
+          </div>
+          ${alreadyMarked?`<div style="font-size:12px;color:#27500A;margin-top:3px">Status: <b>${todayStatus}</b> &nbsp;·&nbsp; Time marked: <b>${todayTime}</b></div>`:''}
+        </div>
+      </div>`+
+      // History table — NO edit/delete for employees
+      (mine.length===0?'<div class="empty">No attendance records yet.</div>'
+      :`<div style="margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <input type="text" placeholder="Search..." oninput="liveSearch('att-tbody',this.value)" style="flex:1;font-size:13px;padding:7px 12px;border:0.5px solid var(--bstrong);border-radius:var(--r);background:var(--s2);color:var(--tp)">
+          <button class="btn" onclick="downloadAttReport('mine')" style="font-size:11.5px;flex-shrink:0"><i class="ti ti-download"></i></button>
+        </div>
+        <div style="overflow-x:auto"><table><thead><tr>
+          <th style="width:30%">Date</th>
+          <th style="width:20%">⏰ Time</th>
+          <th style="width:20%">Status</th>
+          <th style="width:30%">Notes</th>
+        </tr></thead><tbody id="att-tbody">
+        ${mine.map(r=>{
+          const {date}=parseAttDate(r.fields['Date']);
+          const empTime=r.fields['Time Marked']||r._timeMarked||'—';
+          // NO edit/delete buttons for employees
+          return `<tr>
+            <td style="font-size:12px">${date||r.fields['Date']||'—'}</td>
+            <td style="font-size:12px;font-family:monospace;color:var(--navy);font-weight:600">${empTime}</td>
+            <td>${statusBadge(r._displayStatus||r.fields['Status'])}</td>
+            <td style="font-size:11px;color:var(--tm)">${escHtml(r.fields['Notes'])}</td>
+          </tr>`;
+        }).join('')}
+        </tbody></table></div>`);
+  }
+}
+
+// Global date parser (same logic as inside loadAttendance)
+function parseAttDateGlobal(raw) {
+  if(!raw) return {date:'',time:'',timeFull:''};
+  raw = String(raw).trim().replace(',','');
+  let datePart='', timePart='';
+  if(/^\d{4}-\d{2}-\d{2}/.test(raw)) {
+    const isoClean=raw.replace('T',' ');
+    const parts=isoClean.split(' ');
+    const isoParts=parts[0].split('-');
+    datePart=isoParts[2]+'/'+isoParts[1]+'/'+isoParts[0];
+    timePart=(parts[1]||'').substring(0,8);
+  } else if(/^\d{2}\/\d{2}\/\d{4}/.test(raw)) {
+    const parts=raw.split(' ');
+    datePart=parts[0];
+    timePart=(parts[1]||'').substring(0,8);
+  } else {
+    datePart=raw.substring(0,10);
+    timePart=raw.length>10?raw.substring(11,19):'';
+  }
+  return {date:datePart, time:timePart.substring(0,5), timeFull:timePart};
+}
+
+function buildAttCalendar(empNames, allDates, empDates) {
+  if(empNames.length===0||allDates.length===0) return '<div class="empty" style="padding:1.5rem;text-align:center">No previous attendance records yet.</div>';
+  // allDates are in dd/mm/yyyy — show dd/mm as column headers
+  return `<div style="overflow-x:auto">
+    <table style="min-width:400px;font-size:12px;border-collapse:collapse">
+      <thead><tr>
+        <th style="min-width:140px;text-align:left;padding:7px 10px;background:var(--navy);color:#c8d9f5;position:sticky;left:0">Employee</th>
+        ${allDates.map(d=>{
+          const pts=d.split('/');
+          const label=(pts.length===3)?pts[0]+'/'+pts[1]:d;
+          return '<th style="min-width:68px;text-align:center;padding:6px 4px;background:var(--navy);color:#c8d9f5" title="'+d+'">'+label+'</th>';
+        }).join('')}
+      </tr></thead>
+      <tbody>
+      ${empNames.map((emp,ei)=>`<tr style="background:${ei%2===0?'var(--s2)':'var(--s0)'}">
+        <td style="font-weight:500;padding:7px 10px;position:sticky;left:0;background:${ei%2===0?'var(--s2)':'var(--s0)'};border-bottom:0.5px solid var(--border)">${escHtml(emp)}</td>
+        ${allDates.map(d=>{
+          const entry=empDates[emp]&&empDates[emp][d];
+          if(!entry) return '<td style="text-align:center;padding:6px 4px;border-bottom:0.5px solid var(--border);color:var(--tm)">—</td>';
+          const s=entry.status||'';
+          const cls=s==='Present'?'bg':s==='Late'?'ba':s==='On Leave'?'bb':'br';
+          const abbr=s==='Present'?'P':s==='Late'?'L':s==='On Leave'?'OL':'A';
+          return '<td style="text-align:center;padding:5px 4px;border-bottom:0.5px solid var(--border)" title="'+s+(entry.time?' at '+entry.time:'')+'">'
+            +'<span class="badge '+cls+'" style="font-size:10px">'+abbr+'</span>'
+            +(entry.time?'<div style="font-size:9px;color:var(--tm);margin-top:2px">'+entry.time+'</div>':'')
+            +'</td>';
+        }).join('')}
+      </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>
+  <div style="margin-top:10px;display:flex;gap:14px;flex-wrap:wrap;font-size:12px">
+    <span><span class="badge bg" style="font-size:10px">P</span> Present</span>
+    <span><span class="badge ba" style="font-size:10px">L</span> Late</span>
+    <span><span class="badge bb" style="font-size:10px">OL</span> On Leave</span>
+    <span><span class="badge br" style="font-size:10px">A</span> Absent</span>
+  </div>`;
+}
+
+function filterAttCalendar(dateVal) {
+  if(!allData.attendance) return;
+  const attRecs=allData.attendance.filter(r=>!['Leave Applied','Leave Rejected'].includes(r.fields['Status']));
+  attRecs.forEach(r=>{ if(r.fields['Status']==='Leave Approved') r._displayStatus='On Leave'; });
+  // Get today to exclude from history
+  const now2=new Date();
+  const todayF=String(now2.getDate()).padStart(2,'0')+'/'+String(now2.getMonth()+1).padStart(2,'0')+'/'+now2.getFullYear();
+  let filtered=attRecs;
+  if(dateVal) {
+    const parts=dateVal.split('-');
+    const searchStr=parts[2]+'/'+parts[1]+'/'+parts[0];
+    // searchStr is dd/mm/yyyy, parseAttDate normalises everything
+    filtered=attRecs.filter(r=>{
+      const {date}=parseAttDateGlobal(r.fields['Date']||'');
+      return date===searchStr;
+    });
+  }
+  const empDates={};
+  filtered.forEach(r=>{
+    const emp=(r.fields['Employee Name']||'?').trim();
+    const {date,time}=parseAttDateGlobal(r.fields['Date']||'');
+    if(!date) return;
+    if(!empDates[emp]) empDates[emp]={};
+    const fcTime=r.fields['Time Marked']||time||'';
+    if(!empDates[emp][date]) empDates[emp][date]={status:r._displayStatus||r.fields['Status'],time:fcTime};
+  });
+  const empNames=Object.keys(empDates).sort();
+  const allDates=[...new Set(filtered.map(r=>parseAttDateGlobal(r.fields['Date']||'').date))].filter(Boolean).sort((a,b)=>{
+    const [da,ma,ya]=a.split('/'); const [db,mb,yb]=b.split('/');
+    return new Date(yb,mb-1,db)-new Date(ya,ma-1,da);
+  });
+  const wrap=document.getElementById('att-calendar-wrap');
+  if(wrap) wrap.innerHTML=buildAttCalendar(empNames,allDates,empDates);
+}
+
+async function loadLeave() {
+  const isHR=['admin','hr','manager'].includes(currentUser.role);
+  const leaveEl=document.getElementById('leave-table'); if(!leaveEl) return;
+  leaveEl.innerHTML='<div class="loading"><div class="spinner"></div>Loading leave requests...</div>';
+  // Always fresh — never use cache for leave
+  let recs=[];
+  try { recs=await atFetch(TABLES.attendance); } catch(e){ leaveEl.innerHTML='<div class="empty" style="color:#dc2626">⚠️ Could not load records: '+e.message+'</div>'; return; }
+  allData.attendance=recs; cacheRecs('attendance',recs);
+  // Match both 'Leave Applied' and 'Leave' in case Airtable stored old value
+  const leaveStatuses=['Leave Applied','Leave Approved','Leave Rejected','Leave'];
+  const leaveRecs=recs.filter(r=>leaveStatuses.includes(r.fields['Status']));
+  const mine=isHR?leaveRecs:leaveRecs.filter(r=>(r.fields['Employee Name']||'').trim()===currentUser.name.trim());
+  const pending=leaveRecs.filter(r=>r.fields['Status']==='Leave Applied'||r.fields['Status']==='Leave');
+  if(isHR) {
+    leaveEl.innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div>
+          <div style="font-size:13.5px;font-weight:600;color:var(--tp)">All leave requests — ${leaveRecs.length} total</div>
+          <div style="font-size:12px;color:var(--tm);margin-top:2px">${pending.length} pending approval</div>
+        </div>
+        <button class="btn" onclick="allData.attendance=null;loadSection('leave')"><i class="ti ti-refresh"></i> Refresh</button>
+      </div>
+      ${leaveRecs.length===0
+        ?`<div class="empty" style="padding:2rem;text-align:center">
+            <i class="ti ti-beach" style="font-size:36px;display:block;margin-bottom:10px;color:var(--navy-light)"></i>
+            No leave requests yet.<br><span style="font-size:12px;color:var(--tm)">Employees apply from their portal under "My Leave".</span>
+           </div>`
+        :`<table><thead><tr>
+            <th style="width:20%">Employee</th>
+            <th style="width:22%">Leave Date</th>
+            <th style="width:26%">Reason</th>
+            <th style="width:14%">Status</th>
+            <th style="width:18%">Action</th>
+          </tr></thead><tbody>
+          ${leaveRecs.map(r=>`<tr>
+            <td style="font-weight:500">${escHtml(r.fields['Employee Name'])}</td>
+            <td style="font-size:12px">${r.fields['Date']||'—'}</td>
+            <td style="font-size:12px;white-space:normal;color:var(--ts)">${escHtml(r.fields['Notes'])}</td>
+            <td>${statusBadge(r.fields['Status'])}</td>
+            <td style="display:flex;gap:4px">
+              ${(r.fields['Status']==='Leave Applied'||r.fields['Status']==='Leave')
+                ?`<button class="btn btn-green" style="padding:4px 8px;font-size:11px" onclick="approveLeave('${r.id}')">✅ Approve</button>
+                   <button class="btn btn-red" style="padding:4px 8px;font-size:11px" onclick="rejectLeave('${r.id}')">❌ Reject</button>`
+                :`<span style="font-size:11px;color:var(--tm)">${r.fields['Status']==='Leave Approved'?'✅ Approved':'❌ Rejected'}</span>`}
+            </td>
+          </tr>`).join('')}
+          </tbody></table>`}`;
+  } else {
+    leaveEl.innerHTML=`
+      <div style="margin-bottom:14px">
+        <div style="font-size:13px;font-weight:600;color:var(--tp)">My leave requests — ${mine.length} submitted</div>
+        <div style="font-size:12px;color:var(--tm);margin-top:3px">HR will review and approve or reject. Click refresh to check status.</div>
+      </div>
+      <div style="margin-bottom:10px"><button class="btn" style="font-size:12px" onclick="allData.attendance=null;loadSection('leave')"><i class="ti ti-refresh"></i> Refresh status</button></div>
+      ${mine.length===0
+        ?`<div style="text-align:center;padding:2.5rem;background:var(--s0);border-radius:10px;border:0.5px solid var(--border);color:var(--tm)">
+            <i class="ti ti-beach" style="font-size:40px;display:block;margin-bottom:12px;color:#a0b8de"></i>
+            <div style="font-size:13px;margin-bottom:6px">No leave requests yet</div>
+            <div style="font-size:12px">Click <b>Apply for leave</b> above to submit one.</div>
+           </div>`
+        :`<table style="width:100%"><thead><tr>
+            <th style="width:30%">Leave Date</th>
+            <th style="width:42%">Reason</th>
+            <th style="width:28%">Status</th>
+          </tr></thead><tbody>
+          ${mine.map(r=>`<tr>
+            <td style="font-size:12.5px;font-weight:500">${r.fields['Date']||'—'}</td>
+            <td style="font-size:12px;white-space:normal;color:var(--ts)">${escHtml(r.fields['Notes'])}</td>
+            <td>${statusBadge(r.fields['Status'])}</td>
+          </tr>`).join('')}
+          </tbody></table>`}`;
+  }
+}
+
+async function approveLeave(id) {
+  showToast('Approving...');
+  await atUpdate(TABLES.attendance,id,{'Status':'Leave Approved'});
+  allData.attendance=null; showToast('✅ Leave approved'); loadSection('leave');
+}
+async function rejectLeave(id) {
+  if(!confirm('Reject this leave request?')) return;
+  showToast('Rejecting...');
+  await atUpdate(TABLES.attendance,id,{'Status':'Leave Rejected'});
+  allData.attendance=null; showToast('❌ Leave rejected'); loadSection('leave');
+}
+
+async function loadPayroll() {
+  const isAdmin=['admin','hr','manager'].includes(currentUser.role);
+  const recs=await atFetch(TABLES.payroll); allData.payroll=recs; cacheRecs('payroll',recs);
+  const mine=isAdmin?recs:recs.filter(r=>r.fields['Employee Name']===currentUser.name);
+  document.getElementById('pay-table').innerHTML=mine.length===0?'<div class="empty">No payroll records yet.</div>'
+    :`<div style="margin-bottom:10px"><div style="position:relative"><i class="ti ti-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--tm);font-size:14px"></i><input type="text" placeholder="Search..." oninput="liveSearch('pay-tbody',this.value)" style="width:100%;font-size:13px;padding:7px 10px 7px 34px;border:0.5px solid var(--bstrong);border-radius:var(--r);background:var(--s2);color:var(--tp)"></div></div>`+
+    `<table><thead><tr><th style="width:18%">Employee</th><th style="width:11%">Month</th><th style="width:13%">Base</th><th style="width:10%">Bonus</th><th style="width:12%">Deductions</th><th style="width:12%">Net Pay</th><th style="width:9%">Status</th><th style="width:15%"></th></tr></thead><tbody id="pay-tbody">
+    ${mine.map(r=>`<tr>
+      <td style="font-weight:500">${escHtml(r.fields['Employee Name'])}</td>
+      <td>${r.fields['Month']||'—'}</td>
+      <td>PKR ${(r.fields['Base Salary']||0).toLocaleString()}</td>
+      <td style="color:#27500A">+PKR ${(r.fields['Bonus']||0).toLocaleString()}</td>
+      <td style="color:#dc2626">-PKR ${(r.fields['Deductions']||0).toLocaleString()}</td>
+      <td style="font-weight:600">PKR ${(r.fields['Net Pay']||0).toLocaleString()}</td>
+      <td>${statusBadge(r.fields['Status'])}</td>
+      <td style="display:flex;gap:3px">${isAdmin?`${editBtn('payroll',r.id)}${delBtn('payroll',r.id)}`:'—'}</td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+async function loadObjections() {
+  const recs=await atFetch(TABLES.objections); allData.objections=recs; cacheRecs('objections',recs);
+  document.getElementById('obj-table').innerHTML=recs.length===0?'<div class="empty">No objections logged yet.</div>'
+    :`<div style="margin-bottom:10px"><div style="position:relative"><i class="ti ti-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--tm);font-size:14px"></i><input type="text" placeholder="Search..." oninput="liveSearch('obj-tbody',this.value)" style="width:100%;font-size:13px;padding:7px 10px 7px 34px;border:0.5px solid var(--bstrong);border-radius:var(--r);background:var(--s2);color:var(--tp)"></div></div>`+
+    `<table><thead><tr><th style="width:16%">Customer</th><th style="width:22%">Objection</th><th style="width:11%">Type</th><th style="width:13%">Assigned</th><th style="width:10%">Priority</th><th style="width:11%">Status</th><th style="width:17%"></th></tr></thead><tbody id="obj-tbody">
+    ${recs.map(r=>`<tr><td style="font-weight:500">${escHtml(r.fields['Customer Name'])}</td><td style="white-space:normal;font-size:11px">${escHtml(r.fields['Objection'])}</td><td>${b(r.fields['Type']||'—','ba')}</td><td style="font-size:11px">${escHtml(r.fields['Assigned To'])}</td><td>${priBadge(r.fields['Priority'])}</td><td>${statusBadge(r.fields['Status'])}</td>${actionBtns('objections',r.id)}</tr>`).join('')}
+    </tbody></table>`;
+}
+
+async function loadEmployees() {
+  const recs=await atFetch(TABLES.employees); allData.employees=recs; cacheRecs('employees',recs);
+  document.getElementById('emp-table').innerHTML=
+    `<div style="margin-bottom:10px"><div style="position:relative"><i class="ti ti-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--tm);font-size:14px"></i><input type="text" placeholder="Search..." oninput="liveSearch('emp-tbody',this.value)" style="width:100%;font-size:13px;padding:7px 10px 7px 34px;border:0.5px solid var(--bstrong);border-radius:var(--r);background:var(--s2);color:var(--tp)"></div></div>`+
+    `<table><thead><tr>
+      <th style="width:18%">Name</th><th style="width:13%">Designation</th><th style="width:11%">Dept</th>
+      <th style="width:16%">Primary Phone</th><th style="width:12%">Status</th>
+      <th style="width:12%">Salary (PKR)</th><th style="width:18%"></th>
+    </tr></thead><tbody id="emp-tbody">
+    ${recs.map(r=>`<tr style="cursor:pointer" onclick="showEmployeeDetail('${r.id}')">
+      <td style="font-weight:500">${escHtml(r.fields['Full Name'])}</td>
+      <td style="font-size:12px">${escHtml(r.fields['Designation']||r.fields['Role'])}</td>
+      <td>${deptBadge(r.fields['Department'])}</td>
+      <td style="font-size:12px">${escHtml(r.fields['Phone'])}</td>
+      <td>${statusBadge(r.fields['Status'])}</td>
+      <td>PKR ${(r.fields['Salary']||0).toLocaleString()}</td>
+      <td onclick="event.stopPropagation()" style="display:flex;gap:3px">${editBtn('employees',r.id)}${delBtn('employees',r.id)}</td>
+    </tr>`).join('')}
+    </tbody></table>
+    <div style="font-size:11.5px;color:var(--tm);padding:.5rem 0">👆 Click any row to see full employee details</div>`;
+}
+
+function showEmployeeDetail(id) {
+  const f=(recCache['employees']||{})[id]; if(!f) return;
+  document.getElementById('modal-title').textContent = escHtml(f['Full Name']||'Employee Details');
+  document.getElementById('modal-save-btn').style.display='none';
+  document.getElementById('modal-body').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="field"><label>Full Name</label><div style="font-weight:500;font-size:13px">${escHtml(f['Full Name'])}</div></div>
+      <div class="field"><label>Designation</label><div style="font-size:13px">${escHtml(f['Designation']||'—')}</div></div>
+      <div class="field"><label>Role</label><div style="font-size:13px">${escHtml(f['Role']||'—')}</div></div>
+      <div class="field"><label>Department</label>${deptBadge(f['Department'])}</div>
+      <div class="field"><label>Status</label>${statusBadge(f['Status'])}</div>
+      <div class="field"><label>Joining Date</label><div style="font-size:13px">${escHtml(f['Joining Date']||'—')}</div></div>
+      <div class="field"><label>Primary Phone</label><div style="font-size:13px">${escHtml(f['Phone']||'—')}</div></div>
+      <div class="field"><label>Secondary Phone</label><div style="font-size:13px">${escHtml(f['Secondary Phone']||'—')}</div></div>
+      <div class="field"><label>Email</label><div style="font-size:13px">${escHtml(f['Email']||'—')}</div></div>
+      <div class="field"><label>CNIC Number</label><div style="font-size:13px">${escHtml(f['CNIC Number']||'—')}</div></div>
+    </div>
+    <div class="field" style="margin-top:8px"><label>Address</label><div style="font-size:13px;background:var(--s0);padding:8px;border-radius:var(--r);border:0.5px solid var(--border)">${escHtml(f['Address']||'—')}</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+      <div class="field"><label>Salary (PKR)</label><div style="font-size:14px;font-weight:600;color:var(--navy)">PKR ${(f['Salary']||0).toLocaleString()}</div></div>
+      <div class="field"><label>Bank Name</label><div style="font-size:13px">${escHtml(f['Bank Name']||'—')}</div></div>
+      <div class="field"><label>Account Number</label><div style="font-size:13px">${escHtml(f['Bank Account Number']||'—')}</div></div>
+      <div class="field"><label>Account Title</label><div style="font-size:13px">${escHtml(f['Account Title']||'—')}</div></div>
+    </div>
+    <div style="margin-top:12px;display:flex;gap:8px">${editBtn('employees',id)}${delBtn('employees',id)}</div>`;
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+async function loadUsers() {
+  const el=document.getElementById('user-table'); if(!el) return;
+  el.innerHTML='<div class="loading"><div class="spinner"></div>Loading accounts...</div>';
+  const users=await getUsers();
+  document.getElementById('user-count').textContent=users.length;
+  el.innerHTML=
+    `<div style="margin-bottom:10px"><div style="position:relative"><i class="ti ti-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--tm);font-size:14px"></i><input type="text" placeholder="Search..." oninput="liveSearch('users-tbody',this.value)" style="width:100%;font-size:13px;padding:7px 10px 7px 34px;border:0.5px solid var(--bstrong);border-radius:var(--r);background:var(--s2);color:var(--tp)"></div></div>`+
+    `<table><thead><tr><th style="width:20%">Name</th><th style="width:24%">Email</th><th style="width:13%">Role</th><th style="width:11%">Dept</th><th style="width:9%">Status</th><th style="width:23%">Actions</th></tr></thead><tbody id="users-tbody">
+    ${users.map((u,i)=>`<tr>
+      <td style="font-weight:500">${escHtml(u.name)}</td>
+      <td style="font-size:11px;color:var(--tm)">${escHtml(u.email)}</td>
+      <td>${b(roleLabel(u.role),'bb')}</td>
+      <td>${deptBadge(u.dept)}</td>
+      <td>${u.active!==false?b('Active','bg'):b('Disabled','br')}</td>
+      <td style="display:flex;gap:4px;flex-wrap:wrap">
+        <button class="btn" style="padding:2px 7px;font-size:10.5px" onclick="editUser(${i})"><i class="ti ti-edit"></i> Edit</button>
+        <button class="btn" style="padding:2px 7px;font-size:10.5px" onclick="toggleUser(${i})">${u.active!==false?'Disable':'Enable'}</button>
+        <button class="btn btn-red" style="padding:2px 7px;font-size:10.5px" onclick="removeUser(${i})">Delete</button>
+      </td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+async function toggleUser(i) {
+  const users=await getUsers(); users[i].active=!(users[i].active!==false); _usersCache=null;
+  await saveUsers(users); _usersCache=null;
+  showToast(users[i].active?'✅ Account enabled':'⚠️ Account disabled'); loadUsers();
+}
+async function removeUser(i) {
+  if(!confirm('Delete this login account permanently?')) return;
+  const users=await getUsers(); users.splice(i,1); _usersCache=null;
+  await saveUsers(users); _usersCache=null;
+  showToast('🗑️ Account deleted'); loadUsers();
+}
+async function editUser(i) {
+  const users=await getUsers(); const u=users[i];
+  editingRecordId=u.email; editingTableKey='users'; currentModalTable='users';
+  document.getElementById('modal-title').textContent='Edit — '+escHtml(u.name);
+  document.getElementById('modal-save-btn').textContent='Save changes';
+  document.getElementById('modal-save-btn').style.display='';
+  document.getElementById('modal-body').innerHTML=`
+    <div class="field"><label>Full Name *</label><input type="text" id="mf-name" value="${escHtml(u.name)}"></div>
+    <div class="field"><label>Email *</label><input type="email" id="mf-email" value="${escHtml(u.email)}"></div>
+    <div class="field"><label>Password *</label><input type="text" id="mf-password" value="${escHtml(u.password)}"></div>
+    <div class="field"><label>Role</label><select id="mf-role"><option value="">Select...</option>${['admin','hr','manager','sales','objections','employee'].map(r=>`<option${u.role===r?' selected':''}>${r}</option>`).join('')}</select></div>
+    <div class="field"><label>Department</label><select id="mf-dept"><option value="">Select...</option>${['Sales','HR','Management','Objections','Operations','Admin'].map(d=>`<option${u.dept===d?' selected':''}>${d}</option>`).join('')}</select></div>`;
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+// =====================
+// EDIT RECORD
+// =====================
+function editRecById(key, id) {
+  const fields=(recCache[key]||{})[id];
+  if(!fields){ showToast('❌ Record not found — try refreshing first'); return; }
+  editingRecordId=id; editingTableKey=key; currentModalTable=key;
+  const form=forms[key]; if(!form) return;
+  document.getElementById('modal-title').textContent='Edit '+escHtml(form.title||key).replace(/^Add |^Log /,'');
+  document.getElementById('modal-save-btn').textContent='Save changes';
+  document.getElementById('modal-save-btn').style.display='';
+  document.getElementById('modal-body').innerHTML=form.fields.map(f=>{
+    const val=fields[f.k]!==undefined?String(fields[f.k]):'';
+    const ml2 = f.maxlen ? ` maxlength="${f.maxlen}"` : '';
+    const it2 = f.t==='tel'?'tel':f.t;
+    return `<div class="field"><label>${f.l}${f.req?' *':''}</label>${
+      f.t==='select'
+        ?`<select id="mf-${f.k}"><option value="">Select...</option>${(f.opts||[]).map(o=>`<option${val===o?' selected':''}>${o}</option>`).join('')}</select>`
+        :f.t==='textarea'
+        ?`<textarea id="mf-${f.k}" rows="2">${escHtml(val)}</textarea>`
+        :`<input type="${it2}" id="mf-${f.k}" value="${escHtml(val)}"${ml2}>`
+    }</div>`;
+  }).join('');
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+async function deleteRec(key, id) {
+  if(!confirm('Delete this record? This cannot be undone.')) return;
+  await atDelete(TABLES[key], id);
+  allData[key]=null; recCache[key]={};
+  showToast('🗑️ Deleted'); loadSection(currentSection);
+}
+
+// =====================
+// MODAL
+// =====================
+const forms = {
+  leads:{title:'Add lead / customer',table:'leads',fields:[
+    {l:'Full Name',k:'Lead Name',t:'text',req:true},
+    {l:'Business Name',k:'Business Name',t:'text'},
+    {l:'Address',k:'Address',t:'text'},
+    {l:'Phone (11 digits)',k:'Phone',t:'tel',maxlen:11},
+    {l:'Email',k:'Email',t:'email'},
+    {l:'Account Type',k:'Account Type',t:'select',opts:['Domestic','Commercial']},
+    {l:'Fuel Type',k:'Fuel Type',t:'select',opts:['Elect & Gas','Electricity Only','Gas Only','Water Only','Elect, Gas & Water']},
+    {l:'Stage',k:'Stage',t:'select',opts:['New','Contacted','Quoted','Negotiating','Lost']},
+    {l:'Lead Date',k:'Lead Date',t:'date'},
+    {l:'Assigned To',k:'Assigned To',t:'text',def:null},
+    {l:'Lead Created By',k:'Lead Created By',t:'text',def:null},
+    {l:'Monthly Value (£)',k:'Monthly Value',t:'number'},
+    {l:'Notes',k:'Notes',t:'textarea'}
+  ]},
+  customers:{title:'Add signed customer',table:'leads',fields:[
+    {l:'Full Name',k:'Lead Name',t:'text',req:true},
+    {l:'Business Name',k:'Business Name',t:'text'},
+    {l:'Address',k:'Address',t:'text'},
+    {l:'Phone (11 digits)',k:'Phone',t:'tel',maxlen:11},
+    {l:'Email',k:'Email',t:'email'},
+    {l:'Account Type',k:'Account Type',t:'select',opts:['Domestic','Commercial']},
+    {l:'Fuel Type',k:'Fuel Type',t:'select',opts:['Elect & Gas','Electricity Only','Gas Only','Water Only','Elect, Gas & Water']},
+    {l:'Assigned To',k:'Assigned To',t:'text',def:null},
+    {l:'Lead Created By',k:'Lead Created By',t:'text',def:null},
+    {l:'Monthly Value (£)',k:'Monthly Value',t:'number'},
+    {l:'Notes',k:'Notes',t:'textarea'}
+  ],extraFields:{'Stage':'Signed'}},
+  tasks:{title:'Assign task',table:'tasks',fields:[
+    {l:'Task description',k:'Task',t:'text',req:true},{l:'Assigned To',k:'Assigned To',t:'text'},{l:'Assigned By',k:'Assigned By',t:'text',def:null},
+    {l:'Team',k:'Team',t:'select',opts:['Sales','HR','Management','Objections','Operations']},
+    {l:'Due Date',k:'Due Date',t:'date'},
+    {l:'Priority',k:'Priority',t:'select',opts:['High','Medium','Low']},
+    {l:'Status',k:'Status',t:'select',opts:['Not Started','In Progress','Done','Overdue']},
+    {l:'Notes',k:'Notes',t:'textarea'}
+  ]},
+  attendance:{title:'Mark attendance',table:'attendance',fields:[
+    {l:'Employee Name',k:'Employee Name',t:'text',req:true,def:null,readonly:true},
+    {l:'Date',k:'Date',t:'date',req:true,def:'__TODAY__'},
+    {l:'Time Marked',k:'Time Marked',t:'text',req:false,def:'__TIME_NOW__',readonly:true},
+    {l:'Status',k:'Status',t:'select',opts:['Present','Absent','Late','On Leave'],def:'__ATT_STATUS__'},
+    {l:'Notes',k:'Notes',t:'textarea'}
+  ]},
+  leave:{title:'Apply for leave',table:'attendance',fields:[
+    {l:'Employee Name',k:'Employee Name',t:'text',req:true,def:null,readonly:true},
+    {l:'Leave Date',k:'Date',t:'date',req:true},
+    {l:'Reason for leave',k:'Notes',t:'textarea',req:true}
+  ],extraFields:{'Status':'Leave Applied'}},
+  payroll:{title:'Add payroll record',table:'payroll',fields:[
+    {l:'Employee Name',k:'Employee Name',t:'text',req:true},
+    {l:'Month (e.g. July 2026)',k:'Month',t:'text'},
+    {l:'Base Salary (PKR)',k:'Base Salary',t:'number'},{l:'Bonus (PKR)',k:'Bonus',t:'number'},
+    {l:'Deductions (PKR)',k:'Deductions',t:'number'},{l:'Net Pay (PKR)',k:'Net Pay',t:'number'},
+    {l:'Status',k:'Status',t:'select',opts:['Paid','Pending','Approved']}
+  ]},
+  objections:{title:'Log objection',table:'objections',fields:[
+    {l:'Customer Name',k:'Customer Name',t:'text',req:true},
+    {l:'Objection details',k:'Objection',t:'textarea',req:true},
+    {l:'Type',k:'Type',t:'select',opts:['Billing','Supplier','Dispute','COT','General']},
+    {l:'Assigned To',k:'Assigned To',t:'text'},
+    {l:'Priority',k:'Priority',t:'select',opts:['High','Medium','Low']},
+    {l:'Status',k:'Status',t:'select',opts:['Open','In Progress','Resolved']},
+    {l:'Date Raised',k:'Date Raised',t:'date'}
+  ]},
+  employees:{title:'Add employee',table:'employees',fields:[
+    {l:'Full Name',k:'Full Name',t:'text',req:true},
+    {l:'Designation',k:'Designation',t:'text'},
+    {l:'Role',k:'Role',t:'text'},
+    {l:'Department',k:'Department',t:'select',opts:['Sales','HR','Management','Objections','Operations','Admin']},
+    {l:'Primary Phone (11 digits)',k:'Phone',t:'tel',maxlen:11},
+    {l:'Secondary Phone (11 digits)',k:'Secondary Phone',t:'tel',maxlen:11},
+    {l:'Email',k:'Email',t:'email'},
+    {l:'Address',k:'Address',t:'textarea'},
+    {l:'CNIC Number',k:'CNIC Number',t:'text'},
+    {l:'Joining Date (dd/mm/yyyy)',k:'Joining Date',t:'text'},
+    {l:'Salary (PKR)',k:'Salary',t:'number'},
+    {l:'Bank Name',k:'Bank Name',t:'text'},
+    {l:'Bank Account Number',k:'Bank Account Number',t:'text'},
+    {l:'Account Title',k:'Account Title',t:'text'},
+    {l:'Status',k:'Status',t:'select',opts:['Active','On Leave','Absent','Resigned']}
+  ]},
+  users:{title:'Create staff login',table:null,fields:[
+    {l:'Full Name',k:'name',t:'text',req:true},{l:'Email (login)',k:'email',t:'email',req:true},
+    {l:'Password',k:'password',t:'text',req:true},
+    {l:'Role',k:'role',t:'select',opts:['admin','hr','manager','sales','objections','employee']},
+    {l:'Department',k:'dept',t:'select',opts:['Sales','HR','Management','Objections','Operations','Admin']}
+  ]}
+};
+
+function openAddModal() {
+  editingRecordId=null; editingTableKey=null;
+  currentModalTable=currentSection;
+  const form=forms[currentModalTable]; if(!form) return;
+  document.getElementById('modal-title').textContent=form.title;
+  document.getElementById('modal-save-btn').textContent='Save';
+  document.getElementById('modal-save-btn').style.display='';
+  document.getElementById('modal-body').innerHTML=form.fields.map(f=>{
+    let defVal='';
+    if(f.def===null) defVal=currentUser.name;
+    else if(f.def==='__NOW__') defVal=nowDateTime();
+    else if(f.def==='__TODAY__') {
+      const n=new Date();
+      defVal=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
+    }
+    else if(f.def==='__TIME_NOW__') {
+      const n=new Date();
+      defVal=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');
+    }
+    else if(f.def==='__ATT_STATUS__') defVal=''; // handled by select default below
+    else defVal=f.def||'';
+    const maxlenAttr = f.maxlen ? ` maxlength="${f.maxlen}"` : '';
+    const inputType = f.t==='tel'?'tel':f.t;
+    return `<div class="field"><label>${f.l}${f.req?' *':''}</label>${
+      f.t==='select'
+        ?`<select id="mf-${f.k}"><option value="">Select...</option>${(f.opts||[]).map(o=>{
+            // Auto-select attendance status based on office time
+            const autoSel = (f.def==='__ATT_STATUS__') ? getAttendanceStatus() : '';
+            // If after grace period, disable Present option
+            const isLate = (f.def==='__ATT_STATUS__') && getAttendanceStatus()==='Late';
+            const disabled = (isLate && o==='Present') ? ' disabled style="color:var(--tm)"' : '';
+            return `<option${o===autoSel?' selected':''}${disabled}>${o}</option>`;
+          }).join('')}</select>`
+        :f.t==='textarea'
+        ?`<textarea id="mf-${f.k}" rows="2" placeholder="${f.l}"></textarea>`
+        :`<input type="${inputType}" id="mf-${f.k}" placeholder="${f.l}" value="${escHtml(defVal)}"${maxlenAttr}${f.readonly?' readonly style="background:var(--s1);color:var(--tm)"':''} oninput="if(this.maxLength>0&&this.value.replace(/\D/g,'').length>this.maxLength)this.value=this.value.slice(0,-1)">`
+    }</div>`;
+  }).join('');
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal-bg').classList.remove('open');
+  document.getElementById('modal-save-btn').style.display='';
+  document.getElementById('modal-save-btn').textContent='Save';
+  editingRecordId=null; editingTableKey=null;
+}
+
+async function saveRecord() {
+  const form=forms[currentModalTable]; if(!form) return;
+  // Capture edit state IMMEDIATELY — closeModal() resets editingRecordId
+  const _editId = editingRecordId;
+  const _editTable = editingTableKey;
+  const _isEdit = !!_editId;
+  // USER ACCOUNTS
+  if(currentModalTable==='users') {
+    const name=(document.getElementById('mf-name').value||'').trim();
+    const email=(document.getElementById('mf-email').value||'').trim().toLowerCase();
+    const password=(document.getElementById('mf-password').value||'').trim();
+    const role=document.getElementById('mf-role').value;
+    const dept=document.getElementById('mf-dept').value;
+    if(!name||!email||!password){ showToast('⚠️ Name, email and password are required'); return; }
+    _usersCache=null;
+    const users=await getUsers();
+    if(!_editId && users.find(u=>u.email.toLowerCase()===email)){ showToast('⚠️ That email already has an account'); return; }
+    if(_editId) {
+      const idx=users.findIndex(u=>u.email===_editId);
+      if(idx>-1) users[idx]={...users[idx],name,email,password,role:role||'employee',dept:dept||'Sales'};
+    } else {
+      users.push({name,email,password,role:role||'employee',dept:dept||'Sales',active:true});
+    }
+    closeModal();
+    showToast('Saving account...');
+    _usersCache=null; await saveUsers(users); _usersCache=null;
+    showToast(_editId?'✅ Account updated!':'✅ Login created — '+name+' can now sign in!');
+    loadUsers(); return;
+  }
+  // AIRTABLE
+  const fields={};
+  for(const f of form.fields){
+    const el=document.getElementById('mf-'+f.k); if(!el) continue;
+    let val=(el.value||'').trim(); if(!val) continue;
+    if(f.t==='number') val=parseFloat(val);
+    fields[f.k]=val;
+  }
+  if(form.extraFields) Object.assign(fields,form.extraFields);
+  for(const f of form.fields.filter(x=>x.req)){
+    if(!fields[f.k]){ showToast('⚠️ Please fill in: '+f.l); return; }
+  }
+  // CRITICAL: For leads/customers — always stamp current user's name
+  // so the record is always attributed to them, even if field was left blank
+  if(currentModalTable==='tasks'&&!_isEdit&&!fields['Assigned By']){
+    fields['Assigned By']=currentUser.name;
+  }
+  if((currentModalTable==='leads'||currentModalTable==='customers')&&!_isEdit){
+    const isEmp = !['admin','hr','manager'].includes(currentUser.role);
+    // Employees always get their name stamped — can't be overridden
+    if(isEmp || !fields['Assigned To']) fields['Assigned To'] = currentUser.name;
+    if(isEmp || !fields['Lead Created By']) fields['Lead Created By'] = currentUser.name;
+  }
+  closeModal();
+  showToast(_isEdit?'Updating record...':'Saving...');
+  if(_isEdit){
+    // EDIT — update existing record, never create a new one
+    await atUpdate(TABLES[form.table],_editId,fields);
+    allData[form.table]=null; allData[currentModalTable]=null;
+    showToast('✅ Updated successfully!');
+    loadSection(currentSection);
+    return;
+  }
+  // NEW record only
+  await atCreate(TABLES[form.table],fields);
+  // Auto-create task from lead/customer notes with follow-up keywords
+  if((currentModalTable==='leads'||currentModalTable==='customers')&&!_isEdit&&fields['Notes']){
+    const notesLow=(fields['Notes']||'').toLowerCase();
+    const keywords=['call','follow','remind','tomorrow','next week','meeting','contact','ring','text','email','chase','check back'];
+    if(keywords.some(k=>notesLow.includes(k))&&fields['Assigned To']){
+      try{
+        await atCreate(TABLES.tasks,{
+          'Task':'Follow up: '+(fields['Lead Name']||'Customer')+' — '+(fields['Notes']||'').substring(0,80),
+          'Assigned To':fields['Assigned To'],
+          'Assigned By':currentUser.name,
+          'Team':'Sales','Priority':'Medium','Status':'Not Started',
+          'Notes':'Auto from lead note: '+fields['Notes']
+        });
+      }catch(e){}
+    }
+  }
+  // Leave request — notify HR via Firebase
+  if(currentModalTable==='leave' && db) {
+    try {
+      await db.ref('leave_requests').push({
+        employeeName:currentUser.name, employeeEmail:currentUser.email,
+        leaveDate:fields['Date']||'', reason:fields['Notes']||'', ts:Date.now()
+      });
+    } catch(e){}
+  }
+  editingRecordId=null; editingTableKey=null;
+  allData[form.table]=null; allData[currentModalTable]=null;
+  if(currentModalTable==='objections') {
+    // Auto-create task for the assigned person
+    try {
+      const assignedTo = fields['Assigned To']||'';
+      if(assignedTo) {
+        await atCreate(TABLES.tasks, {
+          'Task': 'Objection: '+(fields['Customer Name']||'Customer')+' — '+(fields['Objection']||'').substring(0,60),
+          'Assigned To': assignedTo, 'Team': 'Objections',
+          'Priority': fields['Priority']||'Medium', 'Status': 'Not Started',
+          'Notes': 'Auto-created from objection. Type: '+(fields['Type']||'')
+        });
+        showToast('✅ Objection saved & task created for '+assignedTo+'!');
+      } else { showToast('✅ Objection saved!'); }
+    } catch(e) { showToast('✅ Objection saved!'); }
+  } else {
+    showToast(currentModalTable==='leave'?'✅ Leave request submitted! HR will be notified.':'✅ Saved!');
+  }
+  loadSection(currentSection);
+}
+
+// =====================
+// CHAT
+// =====================
+function switchChat(ch, el) {
+  document.querySelectorAll('.chat-tab').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  currentChannel=ch;
+  const inp=document.getElementById('chat-input'); if(inp) inp.placeholder=`Message #${ch}...`;
+  lastSeenTs[ch]=Date.now();
+  if(currentUser) localStorage.setItem('rbs_ls_'+currentUser.email+'_'+ch,lastSeenTs[ch]);
+  listenToChannel(ch);
+}
+
+function buildChatTabs() {
+  const r = currentUser ? currentUser.role : 'employee';
+  // employee & sales → General only
+  // objections → General, Sales, Objections, HR
+  // admin/hr/manager → all including Management
+  const isMgmt = ['admin','hr','manager'].includes(r);
+  const isObjTeam = r === 'objections';
+  const isBasic = r === 'employee' || r === 'sales';
+  const tabs = document.getElementById('chat-tab-container');
+  if(!tabs) return;
+  let html = `<div class="chat-tab active" onclick="switchChat('general',this)"># General</div>`;
+  if(!isBasic) html += `<div class="chat-tab" onclick="switchChat('sales',this)"># Sales</div>`;
+  if(!isBasic) html += `<div class="chat-tab" onclick="switchChat('objections',this)"># Objections</div>`;
+  if(!isBasic) html += `<div class="chat-tab" onclick="switchChat('hr',this)"># HR</div>`;
+  if(isMgmt) html += `<div class="chat-tab" onclick="switchChat('management',this)"># Management</div>`;
+  tabs.innerHTML = html;
+}
+
+function listenToChannel(ch) {
+  const msgsEl=document.getElementById('chat-msgs'); if(!msgsEl) return;
+  const welcome=`<div class="msg"><div class="msg-av" style="background:var(--navy);color:#c8d9f5">RB</div><div class="msg-body"><div class="msg-name">Royal Business Solutions</div><div class="msg-text">Welcome to #${ch} 🚀</div></div></div>`;
+  msgsEl.innerHTML=welcome;
+  if(chatListeners[ch] && db){ try{ db.ref('chat/'+ch).off('value',chatListeners[ch]); }catch(e){} chatListeners[ch]=null; }
+  if(db){
+    chatListeners[ch]=db.ref('chat/'+ch).limitToLast(500).on('value', snap=>{
+      const el=document.getElementById('chat-msgs'); if(!el) return;
+      el.innerHTML=welcome;
+      if(snap&&snap.exists()) snap.forEach(c=>{ const m=c.val(); if(m) el.innerHTML+=buildMsgHTML(m,currentUser&&m.senderEmail===currentUser.email); });
+      el.scrollTop=el.scrollHeight;
+    }, err=>{ const el=document.getElementById('chat-msgs'); if(el) el.innerHTML=welcome+`<div style="text-align:center;padding:1rem;color:#dc2626;font-size:12px">⚠️ ${err.message}<br>Check Firebase Realtime Database rules.</div>`; });
+  } else {
+    (localMsgs[ch]||[]).forEach(m=>{ msgsEl.innerHTML+=buildMsgHTML(m,currentUser&&m.senderEmail===currentUser.email); });
+    msgsEl.scrollTop=msgsEl.scrollHeight;
+  }
+}
+
+function buildMsgHTML(m, isMine) {
+  const cls=isMine?'msg me':'msg';
+  const avBg=isMine?'var(--navy)':'var(--navy-light)'; const avCol=isMine?'#c8d9f5':'var(--navy)';
+  const time=m.ts?new Date(m.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';
+  let content='';
+  if(m.type==='image'){
+    const safe=(m.url||'').replace(/'/g,'%27');
+    content=`<div style="padding:6px 0"><img src="${m.url||''}" style="max-width:280px;max-height:220px;border-radius:10px;display:block;cursor:pointer;border:0.5px solid var(--border)" onclick="openImgFull('${safe}')" onerror="this.style.display='none'"><div style="font-size:10px;color:var(--tm);margin-top:4px">${escHtml(m.fileName||'Image')} · ${time}</div></div>`;
+  } else if(m.type==='file'){
+    content=`<div><i class="ti ti-file-download" style="margin-right:6px;color:var(--navy)"></i><a href="${m.url||''}" target="_blank" style="color:var(--navy);text-decoration:none;font-size:13px">${escHtml(m.fileName||'File')}</a><div style="font-size:10px;color:var(--tm);margin-top:3px">${time}</div></div>`;
+  } else {
+    content=`${escHtml(m.text||'')}<div style="font-size:10px;color:var(--tm);margin-top:3px;opacity:.7">${time}</div>`;
+  }
+  return `<div class="${cls}"><div class="msg-av" style="background:${avBg};color:${avCol}">${escHtml(m.initials||'?')}</div><div class="msg-body"><div class="msg-name">${escHtml(m.senderName||'?')} · ${escHtml(m.senderRole||'')}</div><div class="msg-text">${content}</div></div></div>`;
+}
+
+function openImgFull(src) {
+  const o=document.createElement('div');
+  o.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:zoom-out';
+  o.innerHTML=`<img src="${src}" style="max-width:92vw;max-height:90vh;border-radius:12px">`;
+  o.onclick=()=>document.body.removeChild(o); document.body.appendChild(o);
+}
+
+function previewImage(input) {
+  const file=input.files[0]; if(!file) return;
+  pendingImageFile=file; pendingImageName=file.name;
+  const isImg=file.type.startsWith('image/');
+  const reader=new FileReader();
+  reader.onload=e=>{
+    pendingImageData=e.target.result;
+    const bar=document.getElementById('img-preview-bar'); if(bar) bar.style.display='flex';
+    const prev=document.getElementById('img-preview'); const icon=document.getElementById('file-icon');
+    if(isImg&&prev){ prev.src=pendingImageData; prev.style.display='block'; if(icon) icon.style.display='none'; }
+    else { if(prev) prev.style.display='none'; if(icon) icon.style.display='block'; }
+    const nm=document.getElementById('img-preview-name'); if(nm) nm.textContent=file.name;
+    const sz=document.getElementById('img-preview-size'); if(sz) sz.textContent=(file.size/1024/1024).toFixed(1)+' MB';
+  };
+  reader.onerror=()=>showToast('❌ Could not read file');
+  reader.readAsDataURL(file);
+}
+
+function clearImage() {
+  pendingImageData=null; pendingImageName=null; pendingImageFile=null;
+  const bar=document.getElementById('img-preview-bar'); if(bar) bar.style.display='none';
+  const inp=document.getElementById('img-input'); if(inp) inp.value='';
+}
+
+async function compressImage(file,maxW,q) {
+  return new Promise((res,rej)=>{
+    const r=new FileReader(); r.onload=e=>{ const img=new Image(); img.onload=()=>{ const c=document.createElement('canvas'); const s=Math.min(1,maxW/img.width); c.width=Math.round(img.width*s); c.height=Math.round(img.height*s); c.getContext('2d').drawImage(img,0,0,c.width,c.height); res(c.toDataURL('image/jpeg',q)); }; img.onerror=rej; img.src=e.target.result; }; r.onerror=rej; r.readAsDataURL(file);
+  });
+}
+
+async function sendMsg() {
+  const inp=document.getElementById('chat-input');
+  const text=(inp?inp.value:'').trim();
+  if(!text&&!pendingImageFile){ showToast('⚠️ Type a message or attach a file'); return; }
+  const ini=(currentUser.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  const base={senderName:currentUser.name,senderEmail:currentUser.email,senderRole:roleLabel(currentUser.role),initials:ini,ts:Date.now()};
+  if(pendingImageFile){
+    const file=pendingImageFile; const isImg=file.type.startsWith('image/');
+    let data=pendingImageData;
+    if(isImg&&file.size>500000){ showToast('Compressing...'); data=await compressImage(file,900,0.72); }
+    showToast('Sending...');
+    const msg={...base,type:isImg?'image':'file',url:data,fileName:file.name};
+    try{ if(db){ await db.ref('chat/'+currentChannel).push(msg); showToast('✅ Sent!'); } else { appendLocalMsg(msg); } }
+    catch(e){ showToast('❌ '+e.message); }
+    clearImage();
+  }
+  if(text){
+    if(inp) inp.value='';
+    const msg={...base,type:'text',text};
+    try{ if(db){ await db.ref('chat/'+currentChannel).push(msg); } else { appendLocalMsg(msg); } }
+    catch(e){ showToast('❌ Message failed: '+e.message); }
+  }
+}
+
+function appendLocalMsg(m){
+  localMsgs[currentChannel]=localMsgs[currentChannel]||[]; localMsgs[currentChannel].push(m);
+  const el=document.getElementById('chat-msgs'); if(el){ el.innerHTML+=buildMsgHTML(m,true); el.scrollTop=el.scrollHeight; }
+}
+
+// =====================
+// NOTIFICATIONS
+// =====================
+let _loginTime = 0;
+
+function initNotifications() {
+  if(!db||!currentUser) return;
+  // Use a timestamp 5 seconds after login to avoid replaying old messages
+  _loginTime = Date.now();
+  const isHR=['admin','hr','manager'].includes(currentUser.role);
+  const myEmailKey = currentUser.email.replace(/[.@]/g,'_');
+
+  // ── Detach ALL previous listeners first ──
+  try{
+    ['general','sales','objections','hr','management'].forEach(ch=>{ try{db.ref('chat/'+ch).off();}catch(e){} });
+    db.ref('leave_requests').off();
+    db.ref('dm_inbox/'+myEmailKey).off();
+  }catch(e){}
+
+  // ── CHAT: only channels this role can see ──
+  const r=currentUser.role;
+  const visibleChannels=['general'];
+  if(r==='objections') visibleChannels.push('sales','objections','hr');
+  if(r==='admin'||r==='hr'||r==='manager') visibleChannels.push('sales','objections','hr','management');
+
+  // Wait 3 seconds after login before attaching chat listeners
+  // This prevents old messages from firing as notifications
+  setTimeout(()=>{
+    visibleChannels.forEach(ch=>{
+      db.ref('chat/'+ch).orderByChild('ts').startAt(_loginTime).on('child_added',snap=>{
+        const m=snap.val(); if(!m) return;
+        if(m.senderEmail===currentUser.email) return;
+        if(currentSection==='chat'&&currentChannel===ch) return;
+        pushNotif({title:escHtml(m.senderName||'Someone')+' in #'+ch, body:m.type==='text'?escHtml(m.text||''):'📎 Sent a file', ts:m.ts||Date.now()});
+      });
+    });
+
+    // ── LEAVE: HR/Admin/Manager only ──
+    if(isHR){
+      db.ref('leave_requests').orderByChild('ts').startAt(_loginTime).on('child_added',snap=>{
+        const m=snap.val(); if(!m) return;
+        pushNotif({title:'🏖️ Leave request from '+(m.employeeName||'employee'), body:'Date: '+(m.leaveDate||''), isLeave:true, ts:m.ts||Date.now()});
+      });
+    }
+
+    // ── DMs: PRIVATE — only this user's inbox path ──
+    // Nobody else listens to this path — completely private
+    db.ref('dm_inbox/'+myEmailKey).orderByChild('ts').startAt(_loginTime).on('child_added',snap=>{
+      const m=snap.val(); if(!m) return;
+      if(m.senderEmail===currentUser.email) return;
+      if(activeDMWith&&activeDMWith.email===m.senderEmail) return;
+      dmUnreadCount++;
+      const badge=document.getElementById('dm-badge');
+      if(badge){badge.textContent=dmUnreadCount;badge.style.display='';}
+      pushNotif({
+        title:'💬 DM from '+escHtml(m.senderName||'Someone'),
+        body:m.type==='text'?escHtml(m.text||''):'📎 Sent a file',
+        isDM:true,senderEmail:m.senderEmail,senderName:m.senderName||'',ts:m.ts||Date.now()
+      });
+    });
+  }, 3000); // 3 second delay prevents old messages triggering notifications
+}
+
+function pushNotif(n){
+  notifications.unshift(n); if(notifications.length>60) notifications.pop();
+  notifCount++; const b2=document.getElementById('notif-badge'); if(b2){b2.textContent=notifCount;b2.style.display='';}
+  showBanner(n);
+  if(Notification.permission==='granted'){ try{new Notification('RBS — '+n.title,{body:n.body||''});}catch(e){} }
+}
+
+function showBanner(n){
+  document.querySelectorAll('.push-banner').forEach(b=>b.remove());
+  const el=document.createElement('div'); el.className='push-banner';
+  el.innerHTML=`<i class="ti ti-bell-ringing" style="font-size:20px;flex-shrink:0;color:#f0c040"></i>
+    <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:13px">${escHtml(n.title)}</div>${n.body?`<div style="font-size:12px;opacity:.85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(n.body)}</div>`:''}</div>
+    <button class="banner-open-btn" style="background:rgba(255,255,255,.25);border:none;color:#fff;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;flex-shrink:0">Open</button>
+    <button onclick="this.closest('.push-banner').remove()" style="background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;padding:4px 8px;flex-shrink:0"><i class="ti ti-x"></i></button>`;
+  el.querySelector('.banner-open-btn').addEventListener('click',()=>{
+    el.remove();
+    if(n.isDM){toggleDMPanel();openDMWith(n.senderEmail,n.senderName,(n.senderName||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase());}
+        else if(n.isLeave){ const allNi=document.querySelectorAll('.ni'); let found=null; allNi.forEach(x=>{if(x.getAttribute('onclick')&&x.getAttribute('onclick').includes("'leave'"))found=x;}); if(found)goSec('leave',found); }
+    else{const ni=document.querySelector('.ni[onclick*="chat"]');if(ni)goSec('chat',ni);}
+  });
+  document.body.appendChild(el);
+  setTimeout(()=>{if(el.parentElement)el.remove();},7000);
+}
+
+function toggleNotifPanel(){
+  closeDMPanel();
+  const p=document.getElementById('notif-panel'),o=document.getElementById('notif-overlay');
+  const open=p.style.display==='flex'; p.style.display=open?'none':'flex'; o.style.display=open?'none':'block';
+  if(!open){renderNotifList();notifCount=0;const b=document.getElementById('notif-badge');if(b)b.style.display='none';}
+}
+function closeNotifPanel(){
+  const p=document.getElementById('notif-panel'),o=document.getElementById('notif-overlay');
+  if(p)p.style.display='none'; if(o)o.style.display='none';
+}
+function renderNotifList(){
+  const list=document.getElementById('notif-list'); if(!list) return;
+  if(!notifications.length){list.innerHTML='<div style="padding:2.5rem 1rem;text-align:center;color:var(--tm)"><i class="ti ti-bell-off" style="font-size:36px;display:block;margin-bottom:10px"></i>No notifications yet</div>';return;}
+  list.innerHTML=notifications.map((n,i)=>`
+    <div onclick="openNotif(${i})" style="display:flex;gap:12px;align-items:flex-start;padding:.85rem 1.25rem;border-bottom:0.5px solid var(--border);cursor:pointer" onmouseover="this.style.background='var(--s0)'" onmouseout="this.style.background=''">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--navy-light);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ${n.isDM?'ti-message-circle':n.isLeave?'ti-beach':'ti-bell'}" style="color:var(--navy);font-size:16px"></i></div>
+      <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;color:var(--tp)">${escHtml(n.title)}</div>${n.body?`<div style="font-size:12px;color:var(--ts);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(n.body)}</div>`:''}<div style="font-size:10.5px;color:var(--tm);margin-top:4px">${timeAgo(n.ts)}</div></div>
+    </div>`).join('');
+}
+function openNotif(i){
+  const n=notifications[i]; closeNotifPanel();
+  if(n.isDM){toggleDMPanel();openDMWith(n.senderEmail,n.senderName,(n.senderName||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase());}
+      else if(n.isLeave){ const allNi=document.querySelectorAll('.ni'); let found=null; allNi.forEach(x=>{if(x.getAttribute('onclick')&&x.getAttribute('onclick').includes("'leave'"))found=x;}); if(found)goSec('leave',found); }
+  else{const ni=document.querySelector('.ni[onclick*="chat"]');if(ni)goSec('chat',ni);}
+}
+function clearNotifs(){notifications=[];renderNotifList();}
+function requestNotifPermission(){ if('Notification'in window&&Notification.permission==='default') Notification.requestPermission(); }
+
+// =====================
+// DIRECT MESSAGES
+// =====================
+function getDMKey(e1,e2){return[e1,e2].map(e=>e.replace(/[.@]/g,'_')).sort().join('__');}
+function toggleDMPanel(){
+  closeNotifPanel();
+  const p=document.getElementById('dm-panel'),o=document.getElementById('dm-overlay');
+  const open=p.style.display==='flex'; if(open){closeDMPanel();return;}
+  p.style.display='flex'; o.style.display='block'; showDMPeople();
+}
+function closeDMPanel(){
+  const p=document.getElementById('dm-panel'),o=document.getElementById('dm-overlay');
+  if(p)p.style.display='none'; if(o)o.style.display='none';
+  if(dmChatListener&&activeDMWith&&db){try{db.ref('dms/'+getDMKey(currentUser.email,activeDMWith.email)).off('value',dmChatListener);}catch(e){}dmChatListener=null;}
+  activeDMWith=null;
+}
+
+// Mark DM messages as read — updates readBy on each message in Firebase
+function markDMAsRead(dmKey) {
+  if(!db||!currentUser||!dmKey) return;
+  const myEmailKey=currentUser.email.replace(/[.@]/g,'_');
+  // Get last 80 messages and mark any NOT from me as read
+  db.ref('dms/'+dmKey).limitToLast(80).once('value', snap=>{
+    if(!snap||!snap.exists()) return;
+    const updates={};
+    snap.forEach(child=>{
+      const m=child.val(); if(!m) return;
+      if(m.senderEmail!==currentUser.email && !(m.readBy&&m.readBy[myEmailKey])){
+        updates['dms/'+dmKey+'/'+child.key+'/readBy/'+myEmailKey]=Date.now();
+      }
+    });
+    if(Object.keys(updates).length>0) db.ref().update(updates);
+  });
+}
+
+// Update the unread badge for a specific person in the DM list
+function updateDMPersonBadge(email) {
+  const emailKey=email.replace(/[.@]/g,'_');
+  const personEl=document.getElementById('dm-person-'+emailKey);
+  if(!personEl) return;
+  const badgeEl=personEl.querySelector('.dm-person-unread');
+  if(!badgeEl) return;
+  const count=dmUnreadPerSender[email]||0;
+  if(count>0){
+    badgeEl.textContent=count;
+    badgeEl.style.display='';
+  } else {
+    badgeEl.style.display='none';
+  }
+  // Make name bold if unread
+  const nameEl=personEl.querySelector('div[style*="font-size:13.5px"]');
+  if(nameEl) nameEl.style.fontWeight=count>0?'700':'500';
+}
+async function showDMPeople(){
+  const pv=document.getElementById('dm-view-people'),cv=document.getElementById('dm-view-chat');
+  if(pv)pv.style.display='flex'; if(cv)cv.style.display='none';
+  const all=await getUsers(); allDMUsers=all.filter(u=>u.email!==currentUser.email&&u.active!==false);
+  renderDMPeopleList(allDMUsers);
+}
+function renderDMPeopleList(users){
+  const list=document.getElementById('dm-people-list'); if(!list) return;
+  if(!users||!users.length){list.innerHTML='<div style="padding:2rem;text-align:center;color:var(--tm)">No other staff accounts yet.</div>';return;}
+  list.innerHTML=users.map(u=>{
+    const ini=(u.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const col=strColor(u.name||'');
+    const safeName=escHtml(u.name);
+    const unread=dmUnreadPerSender[u.email]||0;
+    const emailId=u.email.replace(/[.@]/g,'_');
+    return `<div id="dm-person-${emailId}" onclick="openDMWith('${u.email}','${u.name.replace(/'/g,"\\'")}','${ini}')" style="display:flex;align-items:center;gap:12px;padding:.85rem 1.25rem;cursor:pointer;border-bottom:0.5px solid var(--border)" onmouseover="this.style.background='var(--s0)'" onmouseout="this.style.background=''">
+      <div style="width:40px;height:40px;border-radius:50%;background:${col};color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0">${ini}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13.5px;font-weight:${unread>0?700:500};color:var(--tp)">${safeName}</div>
+        <div style="font-size:12px;color:var(--tm)">${roleLabel(u.role||'employee')} · ${u.dept||''}</div>
+      </div>
+      ${unread>0?`<span class="dm-person-unread" data-email="${escHtml(u.email)}" style="background:#dc2626;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;min-width:20px;text-align:center">${unread}</span>`:`<span class="dm-person-unread" data-email="${escHtml(u.email)}" style="display:none"></span>`}
+      <i class="ti ti-chevron-right" style="color:var(--tm)"></i></div>`;
+  }).join('');
+}
+function filterDMList(q){const filtered=(allDMUsers||[]).filter(u=>(u.name||'').toLowerCase().includes(q.toLowerCase()));renderDMPeopleList(filtered);}
+
+function openDMWith(email,name,initials){
+  activeDMWith={email,name,initials};
+  // Clear unread for this specific person
+  const personUnread=dmUnreadPerSender[email]||0;
+  if(personUnread>0){
+    dmUnreadCount=Math.max(0,dmUnreadCount-personUnread);
+    dmUnreadPerSender[email]=0;
+    const badge=document.getElementById('dm-badge');
+    if(badge){
+      if(dmUnreadCount>0){badge.textContent=dmUnreadCount;badge.style.display='';}
+      else badge.style.display='none';
+    }
+    // Hide the person's red badge
+    updateDMPersonBadge(email);
+  }
+  const pv=document.getElementById('dm-view-people'),cv=document.getElementById('dm-view-chat');
+  if(pv)pv.style.display='none'; if(cv)cv.style.display='flex';
+  const col=strColor(name||'');
+  const av=document.getElementById('dm-chat-av'); if(av){av.textContent=initials;av.style.background=col;av.style.color='#fff';}
+  const dn=document.getElementById('dm-chat-name'); if(dn) dn.textContent=name;
+  const di=document.getElementById('dm-input'); if(di) di.placeholder='Message '+name+'...';
+  const msgsEl=document.getElementById('dm-msgs'); if(msgsEl) msgsEl.innerHTML='<div class="loading"><div class="spinner"></div>Loading...</div>';
+  if(dmChatListener&&db){try{db.ref('dms/'+getDMKey(currentUser.email,email)).off('value',dmChatListener);}catch(e){}dmChatListener=null;}
+  if(!db){if(msgsEl)msgsEl.innerHTML='<div class="empty">Firebase not connected.</div>';return;}
+  const dmKey=getDMKey(currentUser.email,email);
+  dmChatListener=db.ref('dms/'+dmKey).limitToLast(80).on('value',snap=>{
+    const el=document.getElementById('dm-msgs'); if(!el) return;
+    if(!snap||!snap.exists()){el.innerHTML=`<div style="text-align:center;padding:2rem;color:var(--tm)"><i class="ti ti-message-plus" style="font-size:40px;display:block;margin-bottom:12px"></i>Say hello to ${escHtml(name)}!</div>`;return;}
+    el.innerHTML='';
+    snap.forEach(child=>{
+      const m=child.val(); if(!m) return;
+      const msgKey=child.key;
+      const mine=m.senderEmail===currentUser.email;
+      const ini2=(m.senderName||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+      const c2=strColor(m.senderName||'');
+      const time=m.ts?new Date(m.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';
+      // Read receipt ticks — only show on sender's own messages
+      let ticks='';
+      if(mine){
+        if(m.readBy && Object.keys(m.readBy).length>0){
+          // Message has been read by recipient
+          ticks='<span class="msg-ticks ticks-read" title="Seen">✓✓</span>';
+        } else {
+          // Sent but not yet read
+          ticks='<span class="msg-ticks ticks-sent" title="Sent">✓</span>';
+        }
+      }
+      let body='';
+      if(m.type==='image'){
+        const safe=(m.url||'').replace(/'/g,'%27');
+        body=`<div><img src="${m.url||''}" style="max-width:220px;border-radius:10px;display:block;cursor:pointer;border:0.5px solid var(--border)" onclick="openImgFull('${safe}')" onerror="this.outerHTML='<span style=color:var(--tm);font-size:12px>[Image]</span>'"><div style="font-size:10px;color:var(--tm);margin-top:3px">${escHtml(m.fileName||'')} · ${time}${ticks}</div></div>`;
+      } else if(m.type==='file'){
+        body=`<div style="padding:8px;background:var(--s0);border-radius:8px;border:0.5px solid var(--border)"><i class="ti ti-file-download" style="color:var(--navy);margin-right:6px"></i><a href="${m.url||''}" download="${escHtml(m.fileName||'file')}" style="color:var(--navy);font-size:13px;font-weight:500;text-decoration:none">${escHtml(m.fileName||'Download file')}</a><div style="font-size:10px;color:var(--tm);margin-top:3px">${time}${ticks}</div></div>`;
+      } else {
+        body=`${escHtml(m.text||'')}<div style="font-size:10px;color:var(--tm);margin-top:3px;opacity:.7;display:flex;align-items:center;gap:3px;justify-content:flex-end">${time}${ticks}</div>`;
+      }
+      el.innerHTML+=`<div class="${mine?'msg me':'msg'}" data-key="${msgKey}"><div class="msg-av" style="width:28px;height:28px;font-size:10px;flex-shrink:0;background:${mine?'var(--navy)':c2};color:${mine?'#c8d9f5':'#fff'}">${ini2}</div><div class="msg-body"><div class="msg-name">${escHtml(m.senderName||'')}</div><div class="msg-text" style="font-size:13px">${body}</div></div></div>`;
+    });
+    el.scrollTop=el.scrollHeight;
+    // Mark all messages as read by current user
+    markDMAsRead(dmKey);
+  });
+}
+
+async function sendDM(){
+  const inp=document.getElementById('dm-input');
+  const text=(inp?inp.value:'').trim();
+  if(!text||!activeDMWith){showToast('⚠️ Type a message first');return;}
+  if(!db){showToast('❌ Firebase not connected');return;}
+  if(inp)inp.value='';
+  const msg={senderEmail:currentUser.email,senderName:currentUser.name,toEmail:activeDMWith.email,toName:activeDMWith.name,type:'text',text,ts:Date.now()};
+  try{
+    // Write to shared DM conversation (for chat history)
+    await db.ref('dms/'+getDMKey(currentUser.email,activeDMWith.email)).push(msg);
+    // Also write to recipient's PRIVATE inbox (for notification — only they can see this path)
+    const recipientKey=activeDMWith.email.replace(/[.@]/g,'_');
+    await db.ref('dm_inbox/'+recipientKey).push(msg);
+  }
+  catch(e){showToast('❌ Failed: '+e.message);}
+}
+
+async function sendDMFile(input){
+  const file=input.files[0]; if(!file||!activeDMWith) return;
+  if(!db){showToast('❌ Firebase not connected');return;}
+  const isImg=file.type.startsWith('image/');
+  showToast('Sending '+(isImg?'image':'file')+'...');
+  let dataUrl, msgType='file';
+  try{
+    dataUrl=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsDataURL(file);});
+    if(isImg){
+      msgType='image';
+      if(file.size>400000) dataUrl=await compressImage(file,700,0.7);
+    } else {
+      if(dataUrl.length>8000000){showToast('❌ File too large. Max ~6MB');return;}
+    }
+  }
+  catch(e){showToast('❌ Could not read file');return;}
+  const msg={senderEmail:currentUser.email,senderName:currentUser.name,toEmail:activeDMWith.email,toName:activeDMWith.name,type:msgType,url:dataUrl,fileName:file.name,ts:Date.now()};
+  try{
+    await db.ref('dms/'+getDMKey(currentUser.email,activeDMWith.email)).push(msg);
+    const rKey=activeDMWith.email.replace(/[.@]/g,'_');
+    await db.ref('dm_inbox/'+rKey).push(msg);
+    input.value='';
+    showToast('✅ '+(isImg?'Image':'File')+' sent!');
+  }
+  catch(e){showToast('❌ Failed: '+e.message);}
+}
+
+// =====================
+// DOWNLOAD REPORTS — CSV export for all sections
+// =====================
+function downloadCSV(rows, filename) {
+  const csv = rows.map(r => r.map(cell => {
+    const s = String(cell||'').replace(/"/g,'""');
+    return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s}"` : s;
+  }).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('✅ Report downloaded: '+filename);
+}
+
+function downloadAttReport(type) {
+  const recs = allData.attendance || [];
+  const attRecs = recs.filter(r=>!['Leave Applied','Leave Rejected'].includes(r.fields['Status']));
+  const isAdmin = ['admin','hr','manager'].includes(currentUser.role);
+  let rows;
+  const today = new Date();
+  const todayStr = String(today.getDate()).padStart(2,'0')+'/'+String(today.getMonth()+1).padStart(2,'0')+'/'+today.getFullYear();
+
+  if(type==='today') {
+    const todayRecs = attRecs.filter(r=>(r.fields['Date']||'').startsWith(todayStr));
+    rows = [['Employee Name','Date','Time','Status','Notes']];
+    todayRecs.forEach(r=>{
+      const d=r.fields['Date']||'';
+      rows.push([r.fields['Employee Name']||'',d.substring(0,10),d.substring(11)||'',r.fields['Status']||'',r.fields['Notes']||'']);
+    });
+    downloadCSV(rows, 'attendance-today-'+todayStr.replace(/\//g,'-')+'.csv');
+  } else if(type==='mine') {
+    const myName=(currentUser.name||'').trim().toLowerCase();
+    const mine=attRecs.filter(r=>(r.fields['Employee Name']||'').trim().toLowerCase()===myName);
+    rows = [['Date','Time','Status','Notes']];
+    mine.forEach(r=>{
+      const d=r.fields['Date']||'';
+      rows.push([d.substring(0,10),d.substring(11)||'',r.fields['Status']||'',r.fields['Notes']||'']);
+    });
+    downloadCSV(rows, 'my-attendance-'+currentUser.name+'.csv');
+  } else {
+    rows = [['Employee Name','Date','Time','Status','Notes']];
+    attRecs.forEach(r=>{
+      const d=r.fields['Date']||'';
+      rows.push([r.fields['Employee Name']||'',d.substring(0,10),d.substring(11)||'',r.fields['Status']||'',r.fields['Notes']||'']);
+    });
+    downloadCSV(rows, 'attendance-full-report.csv');
+  }
+}
+
+function downloadLeadsReport() {
+  const recs = allData.leads || [];
+  const isAdmin=['admin','hr','manager'].includes(currentUser.role);
+  const _n=(currentUser.name||'').trim().toLowerCase();
+  const mine=isAdmin?recs:recs.filter(r=>(r.fields['Assigned To']||'').trim().toLowerCase()===_n||(r.fields['Lead Created By']||'').trim().toLowerCase()===_n);
+  const rows=[['Lead Name','Business Name','Address','Phone','Email','Account Type','Fuel Type','Stage','Assigned To','Lead Created By','Monthly Value (£)','Notes']];
+  mine.forEach(r=>rows.push([r.fields['Lead Name']||'',r.fields['Business Name']||'',r.fields['Address']||'',r.fields['Phone']||'',r.fields['Email']||'',r.fields['Account Type']||'',r.fields['Fuel Type']||'',r.fields['Stage']||'',r.fields['Assigned To']||'',r.fields['Lead Created By']||'',r.fields['Monthly Value']||'',r.fields['Notes']||'']));
+  downloadCSV(rows,'leads-report-'+new Date().toLocaleDateString('en-GB').replace(/\//g,'-')+'.csv');
+}
+
+function downloadCustomersReport() { downloadLeadsReport(); }
+
+function downloadPayrollReport() {
+  const recs = allData.payroll || [];
+  const isAdmin=['admin','hr','manager'].includes(currentUser.role);
+  const mine=isAdmin?recs:recs.filter(r=>r.fields['Employee Name']===currentUser.name);
+  const rows=[['Employee Name','Month','Base Salary (PKR)','Bonus (PKR)','Deductions (PKR)','Net Pay (PKR)','Status']];
+  mine.forEach(r=>rows.push([r.fields['Employee Name']||'',r.fields['Month']||'',r.fields['Base Salary']||0,r.fields['Bonus']||0,r.fields['Deductions']||0,r.fields['Net Pay']||0,r.fields['Status']||'']));
+  downloadCSV(rows,'payroll-report.csv');
+}
+
+function downloadTasksReport() {
+  const recs = allData.tasks || [];
+  const isAdmin=['admin','hr','manager'].includes(currentUser.role);
+  const mine=isAdmin?recs:recs.filter(r=>r.fields['Assigned To']===currentUser.name);
+  const rows=[['Task','Assigned To','Assigned By','Team','Due Date','Priority','Status','Notes']];
+  mine.forEach(r=>rows.push([r.fields['Task']||'',r.fields['Assigned To']||'',r.fields['Assigned By']||'',r.fields['Team']||'',r.fields['Due Date']||'',r.fields['Priority']||'',r.fields['Status']||'',r.fields['Notes']||'']));
+  downloadCSV(rows,'tasks-report.csv');
+}
+
+function downloadEmployeesReport() {
+  const recs = allData.employees || [];
+  const rows=[['Full Name','Designation','Role','Department','Primary Phone','Secondary Phone','Email','Address','CNIC','Joining Date','Salary (PKR)','Bank Name','Account Number','Account Title','Status']];
+  recs.forEach(r=>rows.push([r.fields['Full Name']||'',r.fields['Designation']||'',r.fields['Role']||'',r.fields['Department']||'',r.fields['Phone']||'',r.fields['Secondary Phone']||'',r.fields['Email']||'',r.fields['Address']||'',r.fields['CNIC Number']||'',r.fields['Joining Date']||'',r.fields['Salary']||0,r.fields['Bank Name']||'',r.fields['Bank Account Number']||'',r.fields['Account Title']||'',r.fields['Status']||'']));
+  downloadCSV(rows,'employees-report.csv');
+}
+
+// =====================
+// PWA — Service Worker + Install Prompt + Mobile Menu
+// =====================
+
+// Inline service worker as a blob URL (no separate file needed)
+function registerServiceWorker() {
+  const swCode = `
+const CACHE = 'rbs-portal-v1';
+const OFFLINE_URLS = [self.location.href];
+
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE).then(cache => cache.addAll(OFFLINE_URLS)).catch(()=>{})
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', e => {
+  if(e.request.method !== 'GET') return;
+  e.respondWith(
+    fetch(e.request).then(resp => {
+      const clone = resp.clone();
+      caches.open(CACHE).then(cache => cache.put(e.request, clone));
+      return resp;
+    }).catch(() => caches.match(e.request).then(r => r || new Response('Offline', {status: 503})))
+  );
+});
+
+self.addEventListener('push', e => {
+  const data = e.data ? e.data.json() : {title:'RBS Portal', body:'You have a new notification'};
+  e.waitUntil(self.registration.showNotification(data.title||'RBS Portal', {
+    body: data.body||'',
+    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="32" fill="%231a3a6b"/><text x="50%" y="55%" font-size="110" text-anchor="middle" dominant-baseline="middle" fill="%23c8d9f5">👑</text></svg>',
+    badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><rect width="96" height="96" rx="16" fill="%231a3a6b"/><text x="50%" y="55%" font-size="60" text-anchor="middle" dominant-baseline="middle" fill="%23c8d9f5">👑</text></svg>',
+    vibrate: [200, 100, 200],
+    data: data
+  }));
+});
+`;
+  try {
+    const blob = new Blob([swCode], {type:'application/javascript'});
+    const swUrl = URL.createObjectURL(blob);
+    navigator.serviceWorker.register(swUrl, {scope: '/'}).then(reg => {
+      console.log('RBS SW registered');
+    }).catch(e => console.log('SW reg failed (expected on file://):', e.message));
+  } catch(e) {}
+}
+
+if('serviceWorker' in navigator) {
+  window.addEventListener('load', registerServiceWorker);
+}
+
+// Install prompt
+let _deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _deferredInstall = e;
+  // Show banner after short delay (only if not already installed)
+  if(!localStorage.getItem('rbs_pwa_installed') && !localStorage.getItem('rbs_pwa_dismissed')) {
+    setTimeout(() => {
+      const banner = document.getElementById('pwa-install-banner');
+      if(banner) banner.classList.add('show');
+    }, 3000);
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  localStorage.setItem('rbs_pwa_installed','1');
+  dismissInstall();
+  showToast('✅ RBS Portal installed on your device!');
+});
+
+function installPWA() {
+  if(_deferredInstall) {
+    _deferredInstall.prompt();
+    _deferredInstall.userChoice.then(r => {
+      if(r.outcome === 'accepted') {
+        localStorage.setItem('rbs_pwa_installed','1');
+        showToast('✅ Installing RBS Portal...');
+      }
+      dismissInstall();
+    });
+  } else {
+    // iOS fallback instructions
+    showToast('📱 Tap the Share button then "Add to Home Screen"');
+    dismissInstall();
+  }
+}
+
+function dismissInstall() {
+  const banner = document.getElementById('pwa-install-banner');
+  if(banner) banner.classList.remove('show');
+  localStorage.setItem('rbs_pwa_dismissed','1');
+}
+
+// iOS detection — show different install hint
+function checkiOS() {
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  const isStandalone = window.navigator.standalone;
+  if(isIOS && !isStandalone && !localStorage.getItem('rbs_pwa_dismissed') && !localStorage.getItem('rbs_pwa_installed')) {
+    setTimeout(() => {
+      const banner = document.getElementById('pwa-install-banner');
+      if(banner) {
+        banner.querySelector('.pwa-install-icon').nextElementSibling.querySelector('div:last-child').textContent = 'Tap Share → "Add to Home Screen"';
+        banner.classList.add('show');
+      }
+    }, 3000);
+  }
+}
+window.addEventListener('load', checkiOS);
+
+// Mobile menu toggle
+function toggleMobileMenu() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  sidebar.classList.toggle('mob-open');
+  overlay.classList.toggle('show');
+}
+function closeMobileMenu() {
+  document.querySelector('.sidebar').classList.remove('mob-open');
+  document.getElementById('sidebar-overlay').classList.remove('show');
+}
+// Close sidebar when nav item tapped on mobile
+document.addEventListener('click', e => {
+  if(e.target.closest('.ni') && window.innerWidth <= 768) {
+    setTimeout(closeMobileMenu, 200);
+  }
+});
+
+
+
+// Apply logo to all img elements and link tags
+(function(){
+  function setLogos(){
+    document.querySelectorAll('.rbs-logo-img').forEach(function(img){img.src=_L;});
+    var fav=document.querySelector('link[rel="icon"]'); if(fav) fav.href=_L;
+    var apple=document.querySelector('link[rel="apple-touch-icon"]'); if(apple) apple.href=_L;
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',setLogos);}
+  else{setLogos();}
+})();
+// =====================
+// SESSION RESTORE
+// =====================
+const _saved=sessionStorage.getItem('rbs_session');
+if(_saved){
+  currentUser=JSON.parse(_saved);
+  getUsers().then(()=>showPortal()).catch(()=>showPortal());
+}
+
+</script>
+</body>
+</html>
